@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+	
+	<servlet> <!-- Objekat za aktivaciju korisnickih naloga -->
+		<servlet-name>ActivationService</servlet-name>
+		<servlet-class>oop2.useract.server.ActivationServlet</servlet-class>
+	</servlet>
+	
+	<servlet> <!-- Servis aplikacije Web Shop -->
+		<servlet-name>EShop</servlet-name>
+		<servlet-class>oop2.shop.server.EShopImpl</servlet-class>
+	</servlet>
+	
+	<servlet> <!-- Pomocni objekat za popunjavanje Web Shop baze -->
+		<servlet-name>EShopFill</servlet-name>
+		<servlet-class>oop2.shop.server.EShopFill</servlet-class>
+	</servlet>
+	
+	<servlet-mapping> <!-- Objekat za aktivaciju korisnickih naloga, slusa na adresi "/activation" -->
+		<servlet-name>ActivationService</servlet-name>
+		<url-pattern>/activation</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>EShop</servlet-name>
+		<url-pattern>/webShop/eshop</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>EShopFill</servlet-name>
+		<url-pattern>/fill</url-pattern>
+	</servlet-mapping>
+</web-app>

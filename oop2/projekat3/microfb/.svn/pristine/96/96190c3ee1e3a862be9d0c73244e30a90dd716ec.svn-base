@@ -1,0 +1,96 @@
+package microfb.client.pages;
+
+import microfb.client.widgets.ButtonFB;
+import microfb.client.widgets.PassBoxFB;
+import microfb.client.widgets.TextBoxFB;
+import microfb.shared.Validator;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.RootPanel;
+
+
+public class LoginPage extends AbstractPage {
+
+	public LoginPage(RootPanel page, String style) {
+		super(page, style);
+		page.setStyleName("dialogPage");
+	}
+	
+	@Override
+	protected void defineElements() {
+		final HTML title = new HTML();
+		title.setHTML("<h1>Login</h1><hr/>");
+		addElement(title);
+		
+		addElement(new HTML("E-Mail:"));
+		final TextBoxFB user = new TextBoxFB();
+		addElement(user);
+		addElement(new HTML("Password:"));
+		final PassBoxFB pass = new PassBoxFB();
+		addElement(pass);
+		
+		HTML br2 = new HTML();
+		br2.setHTML("<br/>");
+		addElement(br2);
+		
+		final CheckBox keepMeLogedIn = new CheckBox(" keep me logged in");
+		keepMeLogedIn.setValue(false);
+		addElement(keepMeLogedIn);
+		
+		HTML br = new HTML();
+		br.setHTML("<br/>");
+		addElement(br);
+		
+		ButtonFB log = new ButtonFB("Login");
+		addElement(log);
+		ButtonFB b = new ButtonFB("Back");
+		addElement(b);
+		b.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				new DialogPage(panels.get("dialogPage"), "dialogPage");
+			}
+		});
+		log.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				boolean loggedIn = false;
+				if (loggedIn() != null) { 
+					loggedIn = true;
+					title.setHTML("<h1>Already logged in!</h1><hr/>");
+					// TODO
+				}
+				if (Validator.email(user.getText()) && Validator.password(pass.getText()) && !loggedIn)
+					service.login(user.getText(), pass.getText(), keepMeLogedIn.getValue(), new AsyncCallback<String>() {
+						
+						@Override
+						public void onSuccess(String result) {
+							if (result == null || result.equals(""))
+								title.setHTML("<h1 style=\"color: red;\">Invalid login!</h1><hr/>");
+							else {
+								title.setHTML("<h1 style=\"color: green; font-size: 12px;\">Logged in!</h1><hr/>");
+								// TODO
+								logIn(result);
+							}
+						}
+						
+						@Override
+						public void onFailure(Throwable caught) {
+							title.setHTML("<h1 style=\"color: red;\">Error: " + caught.getCause().getMessage() + "</h1><hr/>");
+						}
+					});
+				else
+					title.setHTML("<h1 style=\"color: red;\">Check your data!</h1><hr/>");
+			}
+		});
+		if (loggedIn() != null) {
+			title.setHTML("<h1 style=\"color: red;\">You are logged in!</h1><hr/>");
+			//logOut();
+		}
+	}
+
+}

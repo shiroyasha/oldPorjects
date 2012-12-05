@@ -1,0 +1,154 @@
+package maze.gui;
+
+import java.awt.EventQueue;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+
+import maze.maze.Cvor;
+import maze.maze.Maze;
+import maze.maze.MazeSolver;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class Starter {
+
+	private JFrame frmMazeSolver;
+	private Point[] sol;
+	private int dim;
+	private int dens;
+	private Maze mat;
+	private Cvor[][] maze;
+	private JLabel[][] all;
+	
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {}
+		
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Starter window = new Starter();
+					window.frmMazeSolver.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public Starter() {
+		initialize();
+		frmMazeSolver.setVisible(true);
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() 
+	{
+
+		dim = Integer.parseInt(new String(JOptionPane.showInputDialog("Matrix dimension")));
+		dens = Integer.parseInt(new String(JOptionPane.showInputDialog("Wall density")));
+		
+		do {
+			mat = new Maze(dim, dens);
+			mat.makeMaze();
+			maze = mat.getMazeLayout();
+			sol = new MazeSolver().getSolution(mat.getMazeLayout());
+		} while(sol == null);
+		
+		frmMazeSolver = new JFrame();
+		frmMazeSolver.setIconImage(Toolkit.getDefaultToolkit().getImage("res/wall.png"));
+		frmMazeSolver.setTitle("Maze Solver");
+		frmMazeSolver.setResizable(false);
+		frmMazeSolver.setLocationRelativeTo(null);
+		frmMazeSolver.setSize(dim * 50 + 100, dim * 50);
+		frmMazeSolver.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmMazeSolver.setLayout(new BorderLayout());
+		JPanel left = new JPanel();
+		left.setLayout(new GridLayout(dim, dim, 0, 0));
+		frmMazeSolver.getContentPane().add(left, BorderLayout.CENTER);
+		JPanel right = new JPanel();
+		
+		JButton rand = new JButton("Random");
+		rand.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent a) {
+				sol = null;
+				do {
+					mat = new Maze(dim, dens);
+					mat.makeMaze();
+					maze = mat.getMazeLayout();
+					sol = new MazeSolver().getSolution(mat.getMazeLayout());
+				} while(sol == null);
+				for (int i = 1; i < dim + 1; i++)
+					for (int j = 1; j < dim + 1; j ++)
+						if (maze[i][j].vrednost == 1)
+							all[i][j].setIcon(new ImageIcon("res/wall.png"));
+						else
+							all[i][j].setIcon(new ImageIcon("res/ground.png"));
+				for (int i = 1; i < dim + 1; i ++) 
+					for (int j = 1; j < dim + 1; j++)
+						if (inSolution(i, j))
+							all[i][j].setIcon(new ImageIcon("res/path.png"));
+				frmMazeSolver.validate();
+				frmMazeSolver.repaint();
+			}
+		});
+		
+		right.add(rand, BorderLayout.CENTER);
+				
+		frmMazeSolver.getContentPane().add(right, BorderLayout.EAST);
+		
+		Container cp = left;
+		all = new JLabel[dim + 2][dim + 2];
+		for (int i = 1; i < dim + 1; i++)
+			for (int j = 1; j < dim + 1; j ++)
+				if (maze[i][j].vrednost == 1) {
+					all[i][j] = new JLabel(new ImageIcon("res/wall.png"));
+					cp.add(all[i][j]);
+				} else {
+					all[i][j] = new JLabel(new ImageIcon("res/ground.png"));
+					cp.add(all[i][j]);
+				}
+		for (int i = 1; i < dim + 1; i ++) 
+			for (int j = 1; j < dim + 1; j++)
+				if (inSolution(i, j))
+					all[i][j].setIcon(new ImageIcon("res/path.png"));
+	}
+
+	private boolean inSolution(int x, int y) {
+		if (sol == null)
+			return false;
+		for (int i = 0; i < sol.length; i++)
+			if (sol[i].x == x && sol[i].y == y)
+				return true;
+		return false;
+	}
+
+	public Maze getMaze() 
+	{
+		return mat;
+	}
+	
+}

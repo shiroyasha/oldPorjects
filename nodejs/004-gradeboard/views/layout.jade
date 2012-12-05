@@ -1,0 +1,12 @@
+!!!
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    if session.user
+      p You are logged in as #{session.user.username}
+      a(href='/logout')
+        p Logout
+      
+    #content!= body

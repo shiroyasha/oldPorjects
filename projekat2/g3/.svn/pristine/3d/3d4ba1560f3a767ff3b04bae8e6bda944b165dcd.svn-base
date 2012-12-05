@@ -1,0 +1,575 @@
+
+package service;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlElementDecl;
+import javax.xml.bind.annotation.XmlRegistry;
+import javax.xml.namespace.QName;
+
+
+/**
+ * This object contains factory methods for each 
+ * Java content interface and Java element interface 
+ * generated in the service package. 
+ * <p>An ObjectFactory allows you to programatically 
+ * construct new instances of the Java representation 
+ * for XML content. The Java representation of XML 
+ * content can consist of schema derived interfaces 
+ * and classes representing the binding of schema 
+ * type definitions, element declarations and model 
+ * groups.  Factory methods for each of these are 
+ * provided in this class.
+ * 
+ */
+@XmlRegistry
+public class ObjectFactory {
+
+    private final static QName _LogoutResponse_QNAME = new QName("http://service/", "logoutResponse");
+    private final static QName _GetArtikliTable_QNAME = new QName("http://service/", "getArtikliTable");
+    private final static QName _GetKupljenoTable_QNAME = new QName("http://service/", "getKupljenoTable");
+    private final static QName _AddToTipArtiklaTable_QNAME = new QName("http://service/", "addToTipArtiklaTable");
+    private final static QName _Login_QNAME = new QName("http://service/", "login");
+    private final static QName _EditKorisniciTableItemResponse_QNAME = new QName("http://service/", "editKorisniciTableItemResponse");
+    private final static QName _GetTipKorisnikaTable_QNAME = new QName("http://service/", "getTipKorisnikaTable");
+    private final static QName _GetKorisniciTable_QNAME = new QName("http://service/", "getKorisniciTable");
+    private final static QName _GetKorisniciTableResponse_QNAME = new QName("http://service/", "getKorisniciTableResponse");
+    private final static QName _EditTipKorisnikaTableItemResponse_QNAME = new QName("http://service/", "editTipKorisnikaTableItemResponse");
+    private final static QName _EditTipKorisnikaTableItem_QNAME = new QName("http://service/", "editTipKorisnikaTableItem");
+    private final static QName _AddToTipArtiklaTableResponse_QNAME = new QName("http://service/", "addToTipArtiklaTableResponse");
+    private final static QName _GetTipKorisnikaTableResponse_QNAME = new QName("http://service/", "getTipKorisnikaTableResponse");
+    private final static QName _AddToArtikliTableResponse_QNAME = new QName("http://service/", "addToArtikliTableResponse");
+    private final static QName _GetArtikliTableResponse_QNAME = new QName("http://service/", "getArtikliTableResponse");
+    private final static QName _AddToArtikliTable_QNAME = new QName("http://service/", "addToArtikliTable");
+    private final static QName _EditTipArtiklaTableItemResponse_QNAME = new QName("http://service/", "editTipArtiklaTableItemResponse");
+    private final static QName _EditArtikliTableItem_QNAME = new QName("http://service/", "editArtikliTableItem");
+    private final static QName _GetKorpaTable_QNAME = new QName("http://service/", "getKorpaTable");
+    private final static QName _GetKorpaTableResponse_QNAME = new QName("http://service/", "getKorpaTableResponse");
+    private final static QName _AddToTipKorisnikaTableResponse_QNAME = new QName("http://service/", "addToTipKorisnikaTableResponse");
+    private final static QName _GetKupljenoTableResponse_QNAME = new QName("http://service/", "getKupljenoTableResponse");
+    private final static QName _Logout_QNAME = new QName("http://service/", "logout");
+    private final static QName _GetTipArtiklaTable_QNAME = new QName("http://service/", "getTipArtiklaTable");
+    private final static QName _EditKorisniciTableItem_QNAME = new QName("http://service/", "editKorisniciTableItem");
+    private final static QName _AddToTipKorisnikaTable_QNAME = new QName("http://service/", "addToTipKorisnikaTable");
+    private final static QName _LoginResponse_QNAME = new QName("http://service/", "loginResponse");
+    private final static QName _EditTipArtiklaTableItem_QNAME = new QName("http://service/", "editTipArtiklaTableItem");
+    private final static QName _EditArtikliTableItemResponse_QNAME = new QName("http://service/", "editArtikliTableItemResponse");
+    private final static QName _GetTipArtiklaTableResponse_QNAME = new QName("http://service/", "getTipArtiklaTableResponse");
+
+    /**
+     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: service
+     * 
+     */
+    public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link AddToTipKorisnikaTableResponse }
+     * 
+     */
+    public AddToTipKorisnikaTableResponse createAddToTipKorisnikaTableResponse() {
+        return new AddToTipKorisnikaTableResponse();
+    }
+
+    /**
+     * Create an instance of {@link AddToTipArtiklaTableResponse }
+     * 
+     */
+    public AddToTipArtiklaTableResponse createAddToTipArtiklaTableResponse() {
+        return new AddToTipArtiklaTableResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetArtikliTableResponse }
+     * 
+     */
+    public GetArtikliTableResponse createGetArtikliTableResponse() {
+        return new GetArtikliTableResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetKorpaTable }
+     * 
+     */
+    public GetKorpaTable createGetKorpaTable() {
+        return new GetKorpaTable();
+    }
+
+    /**
+     * Create an instance of {@link EditKorisniciTableItemResponse }
+     * 
+     */
+    public EditKorisniciTableItemResponse createEditKorisniciTableItemResponse() {
+        return new EditKorisniciTableItemResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetKorisniciTableResponse }
+     * 
+     */
+    public GetKorisniciTableResponse createGetKorisniciTableResponse() {
+        return new GetKorisniciTableResponse();
+    }
+
+    /**
+     * Create an instance of {@link LogoutResponse }
+     * 
+     */
+    public LogoutResponse createLogoutResponse() {
+        return new LogoutResponse();
+    }
+
+    /**
+     * Create an instance of {@link EditTipArtiklaTableItemResponse }
+     * 
+     */
+    public EditTipArtiklaTableItemResponse createEditTipArtiklaTableItemResponse() {
+        return new EditTipArtiklaTableItemResponse();
+    }
+
+    /**
+     * Create an instance of {@link EditTipArtiklaTableItem }
+     * 
+     */
+    public EditTipArtiklaTableItem createEditTipArtiklaTableItem() {
+        return new EditTipArtiklaTableItem();
+    }
+
+    /**
+     * Create an instance of {@link GetKorpaTableResponse }
+     * 
+     */
+    public GetKorpaTableResponse createGetKorpaTableResponse() {
+        return new GetKorpaTableResponse();
+    }
+
+    /**
+     * Create an instance of {@link EditArtikliTableItemResponse }
+     * 
+     */
+    public EditArtikliTableItemResponse createEditArtikliTableItemResponse() {
+        return new EditArtikliTableItemResponse();
+    }
+
+    /**
+     * Create an instance of {@link Logout }
+     * 
+     */
+    public Logout createLogout() {
+        return new Logout();
+    }
+
+    /**
+     * Create an instance of {@link GetKorisniciTable }
+     * 
+     */
+    public GetKorisniciTable createGetKorisniciTable() {
+        return new GetKorisniciTable();
+    }
+
+    /**
+     * Create an instance of {@link AddToArtikliTable }
+     * 
+     */
+    public AddToArtikliTable createAddToArtikliTable() {
+        return new AddToArtikliTable();
+    }
+
+    /**
+     * Create an instance of {@link EditTipKorisnikaTableItem }
+     * 
+     */
+    public EditTipKorisnikaTableItem createEditTipKorisnikaTableItem() {
+        return new EditTipKorisnikaTableItem();
+    }
+
+    /**
+     * Create an instance of {@link EditArtikliTableItem }
+     * 
+     */
+    public EditArtikliTableItem createEditArtikliTableItem() {
+        return new EditArtikliTableItem();
+    }
+
+    /**
+     * Create an instance of {@link GetKupljenoTable }
+     * 
+     */
+    public GetKupljenoTable createGetKupljenoTable() {
+        return new GetKupljenoTable();
+    }
+
+    /**
+     * Create an instance of {@link GetKupljenoTableResponse }
+     * 
+     */
+    public GetKupljenoTableResponse createGetKupljenoTableResponse() {
+        return new GetKupljenoTableResponse();
+    }
+
+    /**
+     * Create an instance of {@link AddToTipArtiklaTable }
+     * 
+     */
+    public AddToTipArtiklaTable createAddToTipArtiklaTable() {
+        return new AddToTipArtiklaTable();
+    }
+
+    /**
+     * Create an instance of {@link GetTipArtiklaTable }
+     * 
+     */
+    public GetTipArtiklaTable createGetTipArtiklaTable() {
+        return new GetTipArtiklaTable();
+    }
+
+    /**
+     * Create an instance of {@link EditTipKorisnikaTableItemResponse }
+     * 
+     */
+    public EditTipKorisnikaTableItemResponse createEditTipKorisnikaTableItemResponse() {
+        return new EditTipKorisnikaTableItemResponse();
+    }
+
+    /**
+     * Create an instance of {@link AddToTipKorisnikaTable }
+     * 
+     */
+    public AddToTipKorisnikaTable createAddToTipKorisnikaTable() {
+        return new AddToTipKorisnikaTable();
+    }
+
+    /**
+     * Create an instance of {@link Login }
+     * 
+     */
+    public Login createLogin() {
+        return new Login();
+    }
+
+    /**
+     * Create an instance of {@link AddToArtikliTableResponse }
+     * 
+     */
+    public AddToArtikliTableResponse createAddToArtikliTableResponse() {
+        return new AddToArtikliTableResponse();
+    }
+
+    /**
+     * Create an instance of {@link LoginResponse }
+     * 
+     */
+    public LoginResponse createLoginResponse() {
+        return new LoginResponse();
+    }
+
+    /**
+     * Create an instance of {@link GetTipKorisnikaTable }
+     * 
+     */
+    public GetTipKorisnikaTable createGetTipKorisnikaTable() {
+        return new GetTipKorisnikaTable();
+    }
+
+    /**
+     * Create an instance of {@link GetArtikliTable }
+     * 
+     */
+    public GetArtikliTable createGetArtikliTable() {
+        return new GetArtikliTable();
+    }
+
+    /**
+     * Create an instance of {@link GetTipArtiklaTableResponse }
+     * 
+     */
+    public GetTipArtiklaTableResponse createGetTipArtiklaTableResponse() {
+        return new GetTipArtiklaTableResponse();
+    }
+
+    /**
+     * Create an instance of {@link EditKorisniciTableItem }
+     * 
+     */
+    public EditKorisniciTableItem createEditKorisniciTableItem() {
+        return new EditKorisniciTableItem();
+    }
+
+    /**
+     * Create an instance of {@link GetTipKorisnikaTableResponse }
+     * 
+     */
+    public GetTipKorisnikaTableResponse createGetTipKorisnikaTableResponse() {
+        return new GetTipKorisnikaTableResponse();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LogoutResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "logoutResponse")
+    public JAXBElement<LogoutResponse> createLogoutResponse(LogoutResponse value) {
+        return new JAXBElement<LogoutResponse>(_LogoutResponse_QNAME, LogoutResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetArtikliTable }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getArtikliTable")
+    public JAXBElement<GetArtikliTable> createGetArtikliTable(GetArtikliTable value) {
+        return new JAXBElement<GetArtikliTable>(_GetArtikliTable_QNAME, GetArtikliTable.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetKupljenoTable }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getKupljenoTable")
+    public JAXBElement<GetKupljenoTable> createGetKupljenoTable(GetKupljenoTable value) {
+        return new JAXBElement<GetKupljenoTable>(_GetKupljenoTable_QNAME, GetKupljenoTable.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddToTipArtiklaTable }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "addToTipArtiklaTable")
+    public JAXBElement<AddToTipArtiklaTable> createAddToTipArtiklaTable(AddToTipArtiklaTable value) {
+        return new JAXBElement<AddToTipArtiklaTable>(_AddToTipArtiklaTable_QNAME, AddToTipArtiklaTable.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Login }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "login")
+    public JAXBElement<Login> createLogin(Login value) {
+        return new JAXBElement<Login>(_Login_QNAME, Login.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EditKorisniciTableItemResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "editKorisniciTableItemResponse")
+    public JAXBElement<EditKorisniciTableItemResponse> createEditKorisniciTableItemResponse(EditKorisniciTableItemResponse value) {
+        return new JAXBElement<EditKorisniciTableItemResponse>(_EditKorisniciTableItemResponse_QNAME, EditKorisniciTableItemResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetTipKorisnikaTable }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getTipKorisnikaTable")
+    public JAXBElement<GetTipKorisnikaTable> createGetTipKorisnikaTable(GetTipKorisnikaTable value) {
+        return new JAXBElement<GetTipKorisnikaTable>(_GetTipKorisnikaTable_QNAME, GetTipKorisnikaTable.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetKorisniciTable }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getKorisniciTable")
+    public JAXBElement<GetKorisniciTable> createGetKorisniciTable(GetKorisniciTable value) {
+        return new JAXBElement<GetKorisniciTable>(_GetKorisniciTable_QNAME, GetKorisniciTable.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetKorisniciTableResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getKorisniciTableResponse")
+    public JAXBElement<GetKorisniciTableResponse> createGetKorisniciTableResponse(GetKorisniciTableResponse value) {
+        return new JAXBElement<GetKorisniciTableResponse>(_GetKorisniciTableResponse_QNAME, GetKorisniciTableResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EditTipKorisnikaTableItemResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "editTipKorisnikaTableItemResponse")
+    public JAXBElement<EditTipKorisnikaTableItemResponse> createEditTipKorisnikaTableItemResponse(EditTipKorisnikaTableItemResponse value) {
+        return new JAXBElement<EditTipKorisnikaTableItemResponse>(_EditTipKorisnikaTableItemResponse_QNAME, EditTipKorisnikaTableItemResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EditTipKorisnikaTableItem }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "editTipKorisnikaTableItem")
+    public JAXBElement<EditTipKorisnikaTableItem> createEditTipKorisnikaTableItem(EditTipKorisnikaTableItem value) {
+        return new JAXBElement<EditTipKorisnikaTableItem>(_EditTipKorisnikaTableItem_QNAME, EditTipKorisnikaTableItem.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddToTipArtiklaTableResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "addToTipArtiklaTableResponse")
+    public JAXBElement<AddToTipArtiklaTableResponse> createAddToTipArtiklaTableResponse(AddToTipArtiklaTableResponse value) {
+        return new JAXBElement<AddToTipArtiklaTableResponse>(_AddToTipArtiklaTableResponse_QNAME, AddToTipArtiklaTableResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetTipKorisnikaTableResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getTipKorisnikaTableResponse")
+    public JAXBElement<GetTipKorisnikaTableResponse> createGetTipKorisnikaTableResponse(GetTipKorisnikaTableResponse value) {
+        return new JAXBElement<GetTipKorisnikaTableResponse>(_GetTipKorisnikaTableResponse_QNAME, GetTipKorisnikaTableResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddToArtikliTableResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "addToArtikliTableResponse")
+    public JAXBElement<AddToArtikliTableResponse> createAddToArtikliTableResponse(AddToArtikliTableResponse value) {
+        return new JAXBElement<AddToArtikliTableResponse>(_AddToArtikliTableResponse_QNAME, AddToArtikliTableResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetArtikliTableResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getArtikliTableResponse")
+    public JAXBElement<GetArtikliTableResponse> createGetArtikliTableResponse(GetArtikliTableResponse value) {
+        return new JAXBElement<GetArtikliTableResponse>(_GetArtikliTableResponse_QNAME, GetArtikliTableResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddToArtikliTable }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "addToArtikliTable")
+    public JAXBElement<AddToArtikliTable> createAddToArtikliTable(AddToArtikliTable value) {
+        return new JAXBElement<AddToArtikliTable>(_AddToArtikliTable_QNAME, AddToArtikliTable.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EditTipArtiklaTableItemResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "editTipArtiklaTableItemResponse")
+    public JAXBElement<EditTipArtiklaTableItemResponse> createEditTipArtiklaTableItemResponse(EditTipArtiklaTableItemResponse value) {
+        return new JAXBElement<EditTipArtiklaTableItemResponse>(_EditTipArtiklaTableItemResponse_QNAME, EditTipArtiklaTableItemResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EditArtikliTableItem }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "editArtikliTableItem")
+    public JAXBElement<EditArtikliTableItem> createEditArtikliTableItem(EditArtikliTableItem value) {
+        return new JAXBElement<EditArtikliTableItem>(_EditArtikliTableItem_QNAME, EditArtikliTableItem.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetKorpaTable }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getKorpaTable")
+    public JAXBElement<GetKorpaTable> createGetKorpaTable(GetKorpaTable value) {
+        return new JAXBElement<GetKorpaTable>(_GetKorpaTable_QNAME, GetKorpaTable.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetKorpaTableResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getKorpaTableResponse")
+    public JAXBElement<GetKorpaTableResponse> createGetKorpaTableResponse(GetKorpaTableResponse value) {
+        return new JAXBElement<GetKorpaTableResponse>(_GetKorpaTableResponse_QNAME, GetKorpaTableResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddToTipKorisnikaTableResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "addToTipKorisnikaTableResponse")
+    public JAXBElement<AddToTipKorisnikaTableResponse> createAddToTipKorisnikaTableResponse(AddToTipKorisnikaTableResponse value) {
+        return new JAXBElement<AddToTipKorisnikaTableResponse>(_AddToTipKorisnikaTableResponse_QNAME, AddToTipKorisnikaTableResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetKupljenoTableResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getKupljenoTableResponse")
+    public JAXBElement<GetKupljenoTableResponse> createGetKupljenoTableResponse(GetKupljenoTableResponse value) {
+        return new JAXBElement<GetKupljenoTableResponse>(_GetKupljenoTableResponse_QNAME, GetKupljenoTableResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link Logout }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "logout")
+    public JAXBElement<Logout> createLogout(Logout value) {
+        return new JAXBElement<Logout>(_Logout_QNAME, Logout.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetTipArtiklaTable }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getTipArtiklaTable")
+    public JAXBElement<GetTipArtiklaTable> createGetTipArtiklaTable(GetTipArtiklaTable value) {
+        return new JAXBElement<GetTipArtiklaTable>(_GetTipArtiklaTable_QNAME, GetTipArtiklaTable.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EditKorisniciTableItem }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "editKorisniciTableItem")
+    public JAXBElement<EditKorisniciTableItem> createEditKorisniciTableItem(EditKorisniciTableItem value) {
+        return new JAXBElement<EditKorisniciTableItem>(_EditKorisniciTableItem_QNAME, EditKorisniciTableItem.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AddToTipKorisnikaTable }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "addToTipKorisnikaTable")
+    public JAXBElement<AddToTipKorisnikaTable> createAddToTipKorisnikaTable(AddToTipKorisnikaTable value) {
+        return new JAXBElement<AddToTipKorisnikaTable>(_AddToTipKorisnikaTable_QNAME, AddToTipKorisnikaTable.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link LoginResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "loginResponse")
+    public JAXBElement<LoginResponse> createLoginResponse(LoginResponse value) {
+        return new JAXBElement<LoginResponse>(_LoginResponse_QNAME, LoginResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EditTipArtiklaTableItem }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "editTipArtiklaTableItem")
+    public JAXBElement<EditTipArtiklaTableItem> createEditTipArtiklaTableItem(EditTipArtiklaTableItem value) {
+        return new JAXBElement<EditTipArtiklaTableItem>(_EditTipArtiklaTableItem_QNAME, EditTipArtiklaTableItem.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link EditArtikliTableItemResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "editArtikliTableItemResponse")
+    public JAXBElement<EditArtikliTableItemResponse> createEditArtikliTableItemResponse(EditArtikliTableItemResponse value) {
+        return new JAXBElement<EditArtikliTableItemResponse>(_EditArtikliTableItemResponse_QNAME, EditArtikliTableItemResponse.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetTipArtiklaTableResponse }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://service/", name = "getTipArtiklaTableResponse")
+    public JAXBElement<GetTipArtiklaTableResponse> createGetTipArtiklaTableResponse(GetTipArtiklaTableResponse value) {
+        return new JAXBElement<GetTipArtiklaTableResponse>(_GetTipArtiklaTableResponse_QNAME, GetTipArtiklaTableResponse.class, null, value);
+    }
+
+}

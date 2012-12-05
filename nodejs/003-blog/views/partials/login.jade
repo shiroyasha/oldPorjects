@@ -1,0 +1,18 @@
+ul#navigation 
+ li
+   a(href='/')= 'Home'
+ li 
+   a(href='/forum')= 'Forum'
+ li 
+   a(href='/calendar')= 'Calendar'
+ li
+   a(href='/about')= 'About'
+ if !(session.user)
+   li
+     a(href='/login')='Login'
+ else
+   li
+     a(href='/logout')='Logout'
+
+
+

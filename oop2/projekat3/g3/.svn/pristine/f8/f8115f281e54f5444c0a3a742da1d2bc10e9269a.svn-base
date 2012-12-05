@@ -1,0 +1,48 @@
+package microfb.client.pages;
+
+import microfb.client.widgets.ButtonFB;
+import microfb.client.widgets.PassBoxFB;
+import microfb.client.widgets.TextBoxFB;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.RootPanel;
+
+
+public class LoginPage extends AbstractPage {
+
+	public LoginPage(RootPanel page, String style) {
+		super(page, style);
+		page.setStyleName("dialogPage");
+	}
+	
+	@Override
+	protected void defineElements() {
+		HTML title = new HTML();
+		title.setHTML("<h1>Login</h1><hr/>");
+		addElement(title);
+		
+		addElement(new HTML("E-Mail:"));
+		TextBoxFB user = new TextBoxFB();
+		addElement(user);
+		addElement(new HTML("Password:"));
+		PassBoxFB pass = new PassBoxFB();
+		addElement(pass);
+		HTML br = new HTML();
+		br.setHTML("<br/>");
+		addElement(br);
+		
+		ButtonFB log = new ButtonFB("Login");
+		addElement(log);
+		ButtonFB b = new ButtonFB("Back");
+		addElement(b);
+		b.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				new DialogPage(panels.get("dialogPage"), "dialogPage");
+			}
+		});
+	}
+
+}

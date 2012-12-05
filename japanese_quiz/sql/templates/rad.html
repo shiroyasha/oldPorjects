@@ -1,0 +1,452 @@
+<!doctype html>
+
+<style>
+    #main
+    {
+        width : 700px;
+        height : 500px;
+        background-color : #dddddd;
+    }
+    .levels
+    {
+        width : 700px;
+        height : 500px;
+        display : none;
+
+        background-color : #0084E3;
+        border : solid 6px #0068B2;
+    }
+
+    .l1_buttons, .l2_buttons , .l3_buttons
+    {
+        background-color : #FF9F00;
+        border : solid 1px #FF6C00;
+        color : #ffffff;
+        font-size : 25px;
+        margin-left : 100px;
+        margin-right : 100px;
+        padding : 8px;
+        border-radius : 3px;
+    }
+
+    .l1_buttons:hover, .l2_buttons:hover , .l3_buttons:hover
+    {
+        background-color : #FF6A00;
+        border : solid 1px #FF6A00;
+        color : #ffffff;
+        font-size : 25px;
+    }
+
+
+
+
+    #level_one
+    {
+        background-color : #0084E3;
+        border : solid 6px #0068B2;
+    }
+    #l1_kanji
+    {
+        font-size : 60px;
+        color : #ffffff;
+        margin-bottom : 0px;
+    }
+    #l1_kana
+    {
+        font-size : 30px;
+        color : #ffffff;
+        margin : 0px;
+    }
+    #l1_english
+    {
+        font-size : 40px;
+        color : #ffffff;
+    }
+
+
+/*
+    #level_two
+    {
+        background-color : #8833aa;
+        font-size : 50px;
+    }
+    #level_three
+    {
+        background-color : #337755;
+        font-size : 50px;
+    }
+    */
+
+    #l2_header
+    {
+        font-size : 40px;
+        color : #ffffff;
+    }
+    #l2_question
+    {
+        font-size : 60px;
+        color : #ffffff;
+    }
+
+    .l2_answer 
+    {
+        width : 600px;
+        height : 60px;
+        margin : 5px;
+        background-color : #ffffff;
+        font-size : 35px;
+    }
+    .l3_answer
+    {
+        width : 300px;
+        height : 60px;
+        margin : 5px;
+        background-color : #ffffff;
+        font-size : 35px;
+        float : left;
+    }
+
+
+</style>
+
+<title> Game </title>
+<script language='javascript' src='{{url_for("static", filename="jquery.js")}}'></script>
+
+<div align='center' >
+    <div id='main' >
+
+        <div id='level_one' class='levels'>
+            <div style='width : 700px; height : 200px'> <p id='l1_kanji'> </p> <p id='l1_kana'> </p> </div>
+            <p id='l1_english'> </p>
+            <input type='button' class='l1_buttons' value='>' onclick='obrada_rezultata();' />
+        </div>
+
+        <div id='level_2' class='levels'>
+
+            <div id='l2_question_div'>
+                <p id='l2_header'> Do you know this word ? </p>
+                <p id='l2_question' > </p>
+
+                <input type='button' value='no' class='l2_buttons'/>
+                <input type='button' value='yes' class='l2_buttons'/>
+            </div>
+            
+            <div id='l2_answer_div'>
+                <div id='l2_a0' class='l2_answer'> </div>
+                <div id='l2_a1' class='l2_answer'> </div>
+                <div id='l2_a2' class='l2_answer'> </div>
+                <div id='l2_a3' class='l2_answer'> </div>
+                <div id='l2_a4' class='l2_answer'> None of above </div>
+
+                <progress id='l2_time' max='5' value='5'> </progress>
+            </div>
+        </div>
+
+        <div id='level_3' class='levels'>
+            <p> Level Three </p>
+            <div id='l3_question_div'>
+                <p> Do you know this word ? </p>
+                <p id='l3_question' > </p>
+
+                <input type='button' value='no' class='l3_buttons'/>
+                <input type='button' value='yes' class='l3_buttons'/>
+            </div>
+
+            <div style='width : 620px;'>
+                <div id='l3_answer_div'>
+                    <div id='l3_a0' class='l3_answer'> </div>
+                    <div id='l3_a1' class='l3_answer'> </div>
+                    <div id='l3_a2' class='l3_answer'> </div>
+                    <div id='l3_a3' class='l3_answer'> </div>
+                    <div id='l3_a4' class='l3_answer'> </div>
+                    <div id='l3_a5' class='l3_answer'> </div>
+                    <div id='l3_a6' class='l3_answer'> </div>
+                    <div id='l3_a7' class='l3_answer'> </div>
+                    <div id='l3_a8' class='l3_answer'> </div>
+                    <div id='l3_a9' class='l3_answer'> </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id='level_5' class='levels'>
+            <p> Level Five </p>
+            <div id='l5_question_div'>
+                <p> Do you know this word ? </p>
+                <p id='l5_question' > </p>
+
+                <input type='button' value='no' class='l5_buttons'/>
+                <input type='button' value='yes' class='l5_buttons'/>
+            </div>
+
+            <div style='width : 620px;'>
+                <div id='l5_answer_div'>
+                    <div id='l5_a0' class='l5_answer'> </div>
+                    <div id='l5_a1' class='l5_answer'> </div>
+                    <div id='l5_a2' class='l5_answer'> </div>
+                    <div id='l5_a3' class='l5_answer'> </div>
+                    <div id='l5_a4' class='l5_answer'> </div>
+                    <div id='l5_a5' class='l5_answer'> </div>
+                    <div id='l5_a6' class='l5_answer'> </div>
+                    <div id='l5_a7' class='l5_answer'> </div>
+                    <div id='l5_a8' class='l5_answer'> </div>
+                    <div id='l5_a9' class='l5_answer'> </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id='one' align='left' > first level </div>
+    <input id='next' type='button' value='next' onclick='obrada_rezultata()' />
+    <div id='stat'> </div>
+
+</div>
+
+
+<script>
+    var items = {{ lista|tojson|safe }}
+    var answer_list = {{ lista_odgovora|tojson|safe }}
+    var cur = 0;
+    var rez = false;
+    var MAXIMUM_LEVEL = 4;
+ 
+    function start( value )
+    {
+        console.log('start', cur , items[cur][0] );
+
+        print_statistics();
+
+        var item = items[cur];
+
+        $('.levels').hide();
+        var level = item[0];
+
+        if( level >= 0 && level < MAXIMUM_LEVEL )
+        {
+            levels[level]( item[1] );
+        }
+        else if( level >= MAXIMUM_LEVEL )
+        {
+            special( item[1] );
+        }
+
+    }
+
+    function print_statistics()
+    {
+        document.getElementById('stat').innerHTML = items[0][0] + ' ' +
+                                            items[1][0] + ' ' +
+                                            items[2][0] + ' ' +
+                                            items[3][0] + ' ' +
+                                            items[4][0] + ' ' +
+                                            items[5][0] + ' ' +
+                                            items[6][0] + ' ' +
+                                            items[7][0] + ' ' +
+                                            items[8][0] + ' ' +
+                                            items[9][0];
+    }
+
+    function jedan( item )
+    {
+        $('#level_one').show();
+
+        $('#l1_kanji').html( item[1] );
+        $('#l1_kana').html( item[2] );
+        $('#l1_english').html( item[6] );
+        rez = true;
+    }
+
+    var timer;
+    var timer_time_left;
+
+    function doTimer(num)
+    {
+        $('#l' + num + '_time').val( timer_time_left);
+        if( timer_time_left > 0 ){ timer_time_left--; timer = setTimeout('doTimer(' + num + ')', 1000); }
+        else { rez = false; obrada_rezultata(); }
+    }
+
+
+    function pitanje_odgovor( num, question, answers, correct_answer, time )
+    {
+
+        $('#l' + num + '_answer_div').hide();
+        $('#l' + num + '_question_div').show();
+
+        $('#level_' + num ).fadeIn(500);
+
+
+        $('#l' + num + '_question').html( question );
+
+        $('.l' + num + '_buttons').unbind();
+
+        $('.l' + num + '_buttons').click( function()
+        {
+            if( this.value == 'yes')
+            {
+                for( var i = 0, len = answers.length; i < len; i++ ) { $('#l' + num + '_a' + i).html( answers[i] ) }
+
+                $('#l' + num + '_question_div').hide();
+                $('#l' + num + '_answer_div').show();
+
+                $('.l' + num + '_answer').unbind();
+                $('.l' + num + '_answer').click( function ()
+                {
+                    rez = this.id[4] == correct_answer;
+                    clearTimeout(timer);
+                    obrada_rezultata();
+                });
+
+                timer_time_left = time;
+                $('#l' + num + '_time').value = 0;
+                doTimer(num);
+            }
+            else
+            {
+                rez = false;
+                obrada_rezultata();
+            }
+        });
+
+    }
+    
+    var list_to_be_randomized = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+    function randomize( num_of_items, index_of_answer , which) 
+    {
+        console.log( list_to_be_randomized );
+        list_to_be_randomized.sort( function (a, b) { return Math.round( Math.random() * 2 ) - 1;  } );
+
+        var odg = list_to_be_randomized.slice(0, num_of_items);
+        if( odg.indexOf(index_of_answer) == -1 ) { odg[ Math.floor( Math.random() * num_of_items )] = index_of_answer; }
+        
+        var odg1 = [0,0,0,0,0,0,0,0,0,0]
+        console.log( odg , list_to_be_randomized)
+        for( var i = 0 ; i < num_of_items ; i++ ) { console.log('odgovor', answer_list[odg[i]], odg[i], i ); odg1[i] = answer_list[odg[i]][which] }
+
+        return [ odg1.slice(0, num_of_items), odg.indexOf( index_of_answer )]
+    }
+
+    function dva( item )
+    {
+        var i = randomize( 5, cur, 6 );
+        var answer = i[0];
+        answer[4] = 'none of above';
+        var index = i[1];
+
+        console.log('second level', answer, index );
+        pitanje_odgovor( 2, item[1], answer , index , 5 );
+    }
+
+    function tri( item )
+    {
+        var i = randomize( 10 , cur, 6 );
+
+        console.log('third level', i[0], i[1] );
+        pitanje_odgovor( 3, item[1], i[0], i[1], 10 );
+    }
+
+    function pet( item )
+    {
+        var i = randomize( 10 , cur, 1 );
+
+        console.log('fifth level', i[0], i[1] );
+
+        pitanje_odgovor( 5, item[6], i[0], i[1], 10 );
+    }
+
+    function special( item )
+    {
+        console.log('special');
+        tri( item );
+    }
+
+    function sentence( item )
+    {
+        console.log('rechenica');
+        dalja_obrada();
+    }
+
+    function revision( item )
+    {
+        console.log('ponavljanje');
+        dalja_obrada();
+    }
+
+
+    function end_of_game()
+    {
+        $('.levels').hide();
+
+        console.log('kraaaaaj !!!!!!!!!!!');
+    }
+
+    function obrada_rezultata()
+    {
+        if( rez ) 
+        {
+            items[cur][0]++;
+            if( items[cur][0] > 1 ) { sentence( items[cur][1] ); }
+            else { dalja_obrada() };
+        }
+        else
+        {
+            revision( items[cur][1] );
+        }
+    }
+
+    function dalja_obrada()
+    {
+        if( items.filter( function (a) { return a[0] < MAXIMUM_LEVEL } ).length == 0 )
+        {
+            end_of_game();
+        }
+        else
+        {
+            var old = cur;
+
+            do
+            {
+                var nok = false; // nok <-> not ok
+                cur = (cur + 1)% 10;
+                if(items[cur][0] < 0)
+                {
+                    nok = true;
+                    items[cur][0]++;   
+                }
+
+            } while( items[cur][0] >= MAXIMUM_LEVEL || nok );
+
+
+            function min()
+            {
+                var m = 1000000; // really large number
+                var index;
+                for( var i = 0, len = items.length; i < len; i++ )
+                {
+                    if( items[i][0] < m && items[i][0] >= MAXIMUM_LEVEL ) 
+                    {
+                        m = items[i][0];
+                        index = i;
+                    }
+                }
+                return index;
+            }
+
+            // ne moze dvaput isti
+            if( cur == old ) 
+            {
+                console.log( 'min', min() , items[min()][0]);
+                cur = min();
+            }
+
+            start();
+        }
+    }
+
+    var levels = [jedan, dva, tri, pet]
+
+    $( function () { start(); } )
+
+</script>

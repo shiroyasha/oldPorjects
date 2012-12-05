@@ -1,0 +1,4 @@
+Za pokretanje je potrebno imati instaliran kawa scheme
+nakon toga se samo pokretanje vrsi sa 
+
+kawa -f AdminCentral.scm

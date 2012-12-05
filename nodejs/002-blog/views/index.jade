@@ -1,0 +1,7 @@
+h1 #{naslov} 
+p Welcome to #{naslov}
+
+#postovi!= partial('partials/post', { collection : postovi } )
+
+a(href='/new', name='New Post')
+  p New Post

@@ -1,0 +1,92 @@
+package microfb.client.pages;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import microfb.client.FBEntryPoint;
+import microfb.client.services.MicroFBServiceAsync;
+
+import com.google.gwt.user.client.Cookies;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+
+public abstract class AbstractPage {
+
+	private RootPanel page;
+	private ArrayList<Widget> elements;
+	protected HashMap<String, RootPanel> panels;
+	protected final String SESSION_ID_NAME = "sessionID"; 
+	protected String style;
+	protected MicroFBServiceAsync service;
+
+	public AbstractPage(RootPanel page, String style) {
+		super();
+		elements = new ArrayList<Widget>();
+		this.page = page;
+		this.style = style;
+		panels = FBEntryPoint.panels;
+		this.service = FBEntryPoint.service;
+		
+		clearAllPanels();
+		
+		stylePage(style);
+		defineElements();
+		addElements();
+	}
+
+	private void addElements() {
+		for (Widget w : elements)
+			page.add(w);
+	}
+	
+	private void stylePage(String style) {
+		if (!style.contains(";;"))
+			page.addStyleName(style);
+		else {
+			String[] styles = style.split(";;");
+			if (styles.length == 1)
+				page.addStyleName(styles[0]);
+			else
+				for (String s : styles)
+					page.addStyleName(s);
+		}
+	}
+	
+	private void clearAllPanels() {
+		Set<Entry<String, RootPanel>> set = panels.entrySet();
+		Iterator<Entry<String, RootPanel>> i = set.iterator();
+		while (i.hasNext()) {
+			Entry<String, RootPanel> entry = i.next();
+			entry.getValue().setStyleName("invisible");
+			entry.getValue().clear();
+		}
+	}
+
+	protected void addElement(Widget w) {
+		elements.add(w);
+	}
+
+	protected String loggedIn() {
+		if (Cookies.isCookieEnabled())
+			if (Cookies.getCookie(SESSION_ID_NAME) != null)
+				return Cookies.getCookie(SESSION_ID_NAME);
+		return null;
+	}
+	
+	protected void logIn(String sessionID) {
+		if (loggedIn() != null)
+			Cookies.setCookie(SESSION_ID_NAME, sessionID);
+	}
+	
+	protected void logOut() {
+		if (loggedIn() != null)
+			Cookies.removeCookie(SESSION_ID_NAME);
+		new DialogPage(panels.get("dialogPage"), "dialogPage");
+	}
+	
+	protected abstract void defineElements();
+}

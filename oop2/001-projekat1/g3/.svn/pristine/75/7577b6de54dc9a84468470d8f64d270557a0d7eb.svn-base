@@ -1,0 +1,36 @@
+package shared;
+import gui.ServerInfo;
+import java.io.Serializable;
+/**
+ * 
+ * @author Nikola Bosic  (nikolabosic91@gmail.com)
+ * 
+ * 
+ * 
+ * Ideja je da se sve bitne informacije o poziciji agenta spakuju u jedan objekat
+ * koji ce se prenositi preko mreze
+ * 
+ * promjenjiva finished treba sadrzi informaciju da li je odredjeni agent zavrsio trku
+ *
+ */
+public class RacerPositionInfo implements Serializable{
+	private static final long serialVersionUID = 1L;
+	private int indexOfAgent;
+	private ServerInfo info;
+	private boolean finished;
+	public RacerPositionInfo(int indexOfAgent, ServerInfo info, boolean finished ){
+		this.indexOfAgent=indexOfAgent;
+		this.info=info;
+		this.finished=finished;
+	}
+	public int getIndexOfAgent(){
+		return indexOfAgent;
+	}
+	public ServerInfo getServerInfo(){
+		return info;
+	}
+	public boolean finished(){
+		return finished;
+	}
+	
+}

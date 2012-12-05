@@ -1,0 +1,433 @@
+@charset "utf-8";
+
+/* Osnovni stilovi (moglo je i u vise fajlova ali me je mrzelo */
+
+* {
+	margin: 0px;
+	padding: 0px;
+	text-align: center;
+}
+
+#wrapper {
+	height: 100%;
+	width: 100%;
+	margin-left: auto !important;
+	margin-right: auto !important;
+}
+
+hr {
+	border: none;
+	color: #F60;
+	background-color: #F60;
+	height: 1px;
+	width: 90%;
+	margin: 0px auto 40px auto;
+}
+
+body,td,th {
+	background-color: #F2F2F2;
+	background: url("/images/GreyBack.jpg");
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 14px;
+}
+
+#root {
+	margin: 0px auto;
+}
+
+*::selection {
+	background: #F60;
+	color: #FFF;
+}
+*::-webkit-selection {
+	background: #F60;
+	color: #FFF;
+}
+*::-moz-selection {
+	background: #F60;
+	color: #FFF;
+}
+*::-o-selection {
+	background: #F60;
+	color: #FFF;
+}
+
+.invisible {
+	display: none;
+}
+
+/* Standardno polje za unos */
+
+.textBox {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f5f5f5), color-stop(1, #ffffff) );
+	background:-o-gradient( linear, left top, left bottom, color-stop(0.05, #f5f5f5), color-stop(1, #ffffff) );
+	background:-ms-gradient( linear, left top, left bottom, color-stop(0.05, #f5f5f5), color-stop(1, #ffffff) );
+	background:-moz-linear-gradient( center top, #f5f5f5 5%, #ffffff 100% );
+	background:-webkit-linear-gradient( center top, #f5f5f5 5%, #ffffff 100% );
+	background:linear-gradient( center top, #f5f5f5 5%, #ffffff 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f5f5', endColorstr='#ffffff');
+	background-color:#f5f5f5;
+	
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	
+	border:1px solid #a8a8a8;
+	display:inline-block;
+	color:#525252;
+	font-family:Verdana, Tahoma, Geneva, sans-serif;
+	font-size:14px;
+	font-weight:normal;
+	padding:8px 4px;
+	text-decoration:none;
+	min-width: 230px;	
+	margin: 10px;
+}
+.textBox:hover {
+	-moz-box-shadow:inset 0px 0px 11px -3px #a3a3a3;
+	-webkit-box-shadow:inset 0px 0px 11px -3px #a3a3a3;
+	box-shadow:inset 0px 0px 11px -3px #a3a3a3;
+	
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f9f9f9), color-stop(1, #ffffff) );
+	background:-o-gradient( linear, left top, left bottom, color-stop(0.05, #f9f9f9), color-stop(1, #ffffff) );
+	background:-ms-gradient( linear, left top, left bottom, color-stop(0.05, #f9f9f9), color-stop(1, #ffffff) );
+	background:-moz-linear-gradient( center top, #f9f9f9 5%, #ffffff 100% );
+	background:-webkit-linear-gradient( center top, #f9f9f9 5%, #ffffff 100% );
+	background:linear-gradient( center top, #f9f9f9 5%, #ffffff 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f9f9f9', endColorstr='#ffffff');
+	background-color:#ffffff;
+}
+.textBox:active {
+	background: #FFF;
+}
+
+.textBoxNoMargin {
+	margin-bottom: -10px !important;	
+}
+
+/* Standardno dugme */
+
+.button {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #e6e6e6) );
+	background:-o-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #e6e6e6) );
+	background:-ms-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #e6e6e6) );
+	background:-moz-linear-gradient( center top, #ffffff 5%, #e6e6e6 100% );
+	background:-webkit-linear-gradient( center top, #ffffff 5%, #e6e6e6 100% );
+	background:linear-gradient( center top, #ffffff 5%, #e6e6e6 100% );
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6');
+	background-color:#e6e6e6;
+	
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	
+	border:1px solid #b3b3b3;
+	display:inline-block;
+	color:#707070;
+	
+	font-family:Tahoma,Verdana,Geneva, sans-serif;
+	font-size:14px;
+	font-weight:normal;
+	padding:8px 20px;
+	margin: 15px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #ffffff;
+}
+.button:hover {
+	-moz-box-shadow: 0px 0px 6px -2px #616161;
+	-webkit-box-shadow: 0px 0px 6px -2px #616161;
+	box-shadow: 0px 0px 6px -2px #616161;
+	
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #f4f4f4) );
+	background:-o-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #f4f4f4) );
+	background:-ms-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #f4f4f4) );
+	background:-moz-linear-gradient( center top, #ffffff 5%, #f4f4f4 100% );
+	background:-webkit-linear-gradient( center top, #ffffff 5%, #f4f4f4 100% );
+	background:linear-gradient( center top, #ffffff 5%, #f4f4f4 100% );
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f4f4f4');
+	background-color:#ffffff;
+}
+.button:active {
+	-moz-box-shadow:inset 0px 0px 11px -3px #a3a3a3;
+	-webkit-box-shadow:inset 0px 0px 11px -3px #a3a3a3;
+	box-shadow:inset 0px 0px 11px -3px #a3a3a3;
+	background: #CCC;
+}
+
+/* Stranice */
+
+/********************************************/
+/*************** DIALOG PAGE ****************/
+/********************************************/
+.dialogPage {
+	display: block !important;
+	margin: 15% auto auto auto !important;
+	padding-top: 15px !important;
+	width: 400px !important;
+	height: 320px !important;
+	
+	background: url("/images/GreyBackL.jpg") !important;
+	background-repeat: repeat;
+	
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	
+	border:1px solid #F60;
+}
+
+.dialogPage img {
+	display: block;
+	margin: 0px auto 20px auto;
+}
+
+/********************************************/
+/**************** LOGIN PAGE ****************/
+/********************************************/
+.loginPage {
+	display: block !important;
+	margin: 15% auto auto auto !important;
+	padding-top: 15px !important;
+	width: 400px !important;
+	height: 350px !important;
+	
+	background: url("/images/GreyBackL.jpg") !important;
+	background-repeat: repeat;
+	
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	
+	border:1px solid #F60;
+}
+
+/********************************************/
+/************** REGISTER PAGE ***************/
+/********************************************/
+.registerPage {
+	display: block !important;
+	margin: 3% auto auto auto !important;
+	padding-top: 15px !important;
+	width: 400px !important;
+	height: auto !important;
+	
+	background: url("/images/GreyBackL.jpg") !important;
+	background-repeat: repeat;
+	
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
+	border-radius:5px;
+	
+	border:1px solid #F60;
+}
+
+/********************************************/
+/**************** HOME PAGE *****************/
+/********************************************/
+.homePage {
+	display: block !important;
+	margin: 0px !important;
+	padding: 0px !important;
+	width: 100% !important;
+	height: 100% !important;
+	position: relative !important;
+	top: 0px !important;
+	left: 0px !important;
+	
+	background: url("/images/GreyBackL.jpg") !important;
+	background-repeat: repeat !important;
+	
+	-moz-border-radius:0px !important;
+	-webkit-border-radius:0px !important;
+	border-radius:0px !important;
+	
+	border: none !important;
+}
+
+/* Home page delovi */
+
+.logo {
+	width: 120px;
+	height: 80px;
+	padding-top: 15px; 
+	position: fixed;	
+	z-index: 10;
+	
+	top: -50px;
+	right: 50px;
+	
+	border: 1px solid #999;
+	-moz-box-shadow: 0px 0px 6px -2px #616161;
+	-webkit-box-shadow: 0px 0px 6px -2px #616161;
+	box-shadow: 0px 0px 6px -2px #616161;
+	
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #e6e6e6) );
+	background:-o-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #e6e6e6) );
+	background:-ms-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #e6e6e6) );
+	background:-moz-linear-gradient( center top, #ffffff 5%, #e6e6e6 100% );
+	background:-webkit-linear-gradient( center top, #ffffff 5%, #e6e6e6 100% );
+	background:linear-gradient( center top, #ffffff 5%, #e6e6e6 100% );
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6');
+	background-color:#e6e6e6;
+	
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 6px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 6px;
+	-webkit-border-top-left-radius: 0px;
+	-webkit-border-bottom-left-radius: 6px;
+	-webkit-border-top-right-radius: 0px;
+	-webkit-border-bottom-right-radius: 6px;
+	-moz-border-top-left-radius: 0px;
+	-moz-border-bottom-left-radius: 6px;
+	-moz-border-top-right-radius: 0px;
+	-moz-border-bottom-right-radius: 6px;
+	
+	-webkit-transition-property: all;
+	-moz-transition-property: all;
+	-o-transition-property: all;
+	transition-property: all;
+	
+	-webkit-transition-duration: .5s;
+	-moz-transition-duration: .5s;
+	-o-transition-duration: .5s;
+	transition-duration: .5s;
+}
+.logo:hover {
+	top: -1px;
+}
+
+.wallPostContainer {
+	-moz-box-shadow: 0px 0px 6px -2px #616161;
+	-webkit-box-shadow: 0px 0px 6px -2px #616161;
+	box-shadow: 0px 0px 6px -2px #616161;
+	
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #e6e6e6) );
+	background:-o-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #e6e6e6) );
+	background:-ms-gradient( linear, left top, left bottom, color-stop(0.05, #ffffff), color-stop(1, #e6e6e6) );
+	background:-moz-linear-gradient( center top, #ffffff 5%, #e6e6e6 100% );
+	background:-webkit-linear-gradient( center top, #ffffff 5%, #e6e6e6 100% );
+	background:linear-gradient( center top, #ffffff 5%, #e6e6e6 100% );
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6');
+	background-color:#e6e6e6;	
+	
+	margin: 10px 0px !important;
+	text-align: center;
+	padding: 15px 40px !important;
+	width: 90% !important;
+	
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+}
+
+.wallChildContainer {
+	-moz-box-shadow: 0px 0px 6px -2px #616161;
+	-webkit-box-shadow: 0px 0px 6px -2px #616161;
+	box-shadow: 0px 0px 6px -2px #616161;
+	
+	background-color: white !important;	
+	
+	margin: 10px 0px !important;
+	text-align: center;
+	padding: 15px 40px !important;
+	width: 80% !important;
+	
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+}
+
+.profile {
+	-moz-box-shadow: 0px 0px 15px 3px #e0e0e0;
+	-webkit-box-shadow: 0px 0px 15px 3px #e0e0e0;
+	box-shadow: 0px 0px 15px 3px #e0e0e0;
+	
+	margin-bottom: 20px !important;
+	
+	background-color: #FDFDFD !important;
+	border: 8px solid #ffffff !important;
+	display: block !important;
+	
+	max-width: 200px !important;
+	height: auto !important;
+}
+
+.top {
+	position: fixed !important;
+	top: 0px !important;
+	width: 100% !important;
+	height: 100px !important;
+	background: url("/images/TopMenuBG.png") !important;
+	background-repeat: repeat-x !important;
+	text-align: center !important;
+	z-index: 4 !important;
+	padding-top: 20px;
+}
+
+.left {
+	height: auto !important;
+	min-height: 500px !important;
+	position: fixed !important;
+	left: 0px !important;
+	top: 50px !important;
+	margin: auto 5px !important;
+	max-width: 15% !important;
+	min-width: 10% !important;
+	text-align: center !important;
+	z-index: 3 !important;
+	padding-top: 80px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.right {
+	height: auto !important;
+	min-height: 500px !important;
+	position: fixed !important;
+	right: 0px !important;
+	top: 50px !important;
+	margin: auto 5px !important;
+	max-width: 15% !important;
+	min-width: 10% !important;
+	text-align: center !important;
+	z-index: 2 !important;
+	padding-top: 80px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.wall {
+	position: relative !important;
+	height: auto !important;
+	width: auto !important;
+	margin: 10px 11% 0px 11% !important;
+	top: 100px !important;
+	min-height: 900px !important;
+	text-align: center !important;
+	z-index: 1 !important;
+	padding-top: 40px;
+}
+
+/* Tekstualni stilovi */
+
+h1 {
+	margin-bottom: 15px !important;
+	font-weight: bold !important;
+	font-size: 15px !important;
+	color: #333;
+}
+
+a {
+	display: inline;
+	color: #F60;
+	font-size: 13px;
+	text-decoration: none;
+	text-align: right;
+}
+a:hover {
+	text-decoration: underline;	
+}
+a:active {
+	color: #F90;
+}

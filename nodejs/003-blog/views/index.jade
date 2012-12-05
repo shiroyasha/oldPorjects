@@ -1,0 +1,10 @@
+//#header
+#content
+  #left
+  #center
+    if session.user && session.user.permission == 'admin'
+      a(href='/post/new')
+        p= 'New post'
+    #posts!= partial('partials/post', {collection : posts} )
+  #right
+#footer

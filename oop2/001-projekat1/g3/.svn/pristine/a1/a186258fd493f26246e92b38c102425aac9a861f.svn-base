@@ -1,0 +1,186 @@
+package gui.stranice;
+
+import gui.GlavniGui;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.AbstractTableModel;
+
+/**
+ * 
+ * @author Igor Sarcevic ( igisar@gmail.com )
+ *
+ */
+
+@SuppressWarnings("serial")
+class AgentSetupTableModel extends AbstractTableModel
+{
+	String[] kolone = {"Agent Name"};
+	List<String> agenti = new ArrayList<String>();
+	
+	public AgentSetupTableModel() 
+	{
+		agenti.add( "Agent Smith" );
+	}
+	
+	public int getColumnCount() {
+		return kolone.length;
+	}
+	
+	@Override
+	public String getColumnName(int column) {
+		return kolone[column];
+	}
+	
+	@Override
+	public Class<?> getColumnClass( int column )
+	{
+		return String.class;
+	}
+	
+	public int getRowCount() {
+		return agenti.size();
+	}
+	
+	public Object getValueAt(int rowIndex, int columnIndex) 
+	{
+		return agenti.get(rowIndex);
+	}
+	
+	@Override
+	public boolean isCellEditable( int rowIndex, int columnIndex)
+	{
+		return true;
+	}
+	
+	@Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) 
+	{
+		agenti.set(rowIndex, (String) aValue);
+	};
+	
+	public void addItem( String item )
+	{
+		agenti.add(item);
+		
+		fireTableRowsInserted( agenti.size(), agenti.size());
+	}
+	
+	public void removeItem( int rowIndex )
+	{
+		agenti.remove( rowIndex );
+		
+		fireTableRowsDeleted( rowIndex, rowIndex );
+	}
+
+	public List<String> getAgentList() 
+	{
+		return agenti;
+	}
+}
+
+/**
+ * 
+ * @author Igor Sarcevic ( igisar@gmail.com )
+ *
+ */
+@SuppressWarnings("serial")
+public class AgentSetupPage extends JComponent
+{
+	AgentSetupTableModel model = new AgentSetupTableModel();
+	JTable table;
+	
+	// argument je final da bi bio koristiv iz lokalne anonimne klase
+	public AgentSetupPage( final GlavniGui parent ) 
+	{
+		setLayout( new BorderLayout() );
+		
+		table = new JTable(model);
+		JScrollPane scrollPane = new JScrollPane(table);
+		add( scrollPane, BorderLayout.CENTER );
+		
+		JButton btnAddServer = new JButton("Add Agent");
+		btnAddServer.addActionListener( new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				String ime = JOptionPane.showInputDialog(parent, "Enter Agent name" );
+				if ( ime != null )
+					model.addItem( ime );
+			}
+		});
+		
+		JButton btnRemoveServer = new JButton("Remove Agent");
+		btnRemoveServer.addActionListener( new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if( table.getSelectedRow() >= 0 && table.getSelectedRow() <= model.getRowCount() )
+					model.removeItem( table.getSelectedRow() );
+			}
+		});
+		
+		//NORTH
+		
+		JPanel panelZaObjasnjenje = new JPanel();
+		panelZaObjasnjenje.add( new JLabel("Please fill the table with agents that will compete in the race") );
+		
+		add(panelZaObjasnjenje, BorderLayout.NORTH);
+		
+		
+		//SOUTH
+		JPanel panelZaDugmice = new JPanel();
+		panelZaDugmice.setLayout( new BoxLayout(panelZaDugmice, BoxLayout.X_AXIS ) );
+		
+		panelZaDugmice.add(btnAddServer);
+		
+		panelZaDugmice.add( Box.createRigidArea( new Dimension(5, 0) ) );
+		panelZaDugmice.add(btnRemoveServer);
+		panelZaDugmice.add( Box.createRigidArea( new Dimension(5, 0) ) );
+		
+		panelZaDugmice.add( Box.createHorizontalGlue() );
+		
+		JButton btnNext = new JButton("Next");
+		panelZaDugmice.add( btnNext );
+		
+		btnNext.addActionListener( new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				parent.setAgentList( model.agenti );
+				parent.nextPage();
+			}
+		});
+		
+		add(panelZaDugmice, BorderLayout.SOUTH);
+		
+	}
+
+	public void reset() 
+	{
+		// do nothing, koristi prethodne agente
+	}
+
+	public String[] getAgentList() 
+	{
+		return model.getAgentList().toArray( new String[0] );
+	}
+}

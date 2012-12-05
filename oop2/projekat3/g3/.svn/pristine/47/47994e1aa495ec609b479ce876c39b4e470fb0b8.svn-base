@@ -1,0 +1,162 @@
+package microfb.shared;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Utilities implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+
+
+	public Utilities() {
+		super();
+	}
+
+	public enum PasswordStrength {
+		VERY_WEAK, WEAK, MEDIUM, STRONG, VERY_STRONG, TOO_SHORT;
+
+		public String getColor() {
+			if( this.toString().equals("VERY_WEAK") )
+			{
+				return "Red";
+			}
+			
+			if( this.toString().equals("WEAK") )
+			{
+				return "DarkOrange";
+			}
+			
+			if( this.toString().equals("MEDIUM") )
+			{
+				return "DarkYellow";
+			}
+			
+			if( this.toString().equals("STRONG") )
+			{
+				return "Green";
+			}
+			
+			if( this.toString().equals("VERY_STRONG") )
+			{
+				return "DarkGreen";
+			}
+			
+			return "DarkRed";
+		}
+	}
+	
+	public static PasswordStrength passwordStrength(String pass) {
+		if (pass.length() < Validator.MINIMUM_PASSWORD_LENGTH)
+			return PasswordStrength.TOO_SHORT;
+
+		int brojac = 0;
+
+		if (pass.matches(".*\\d.*"))
+			brojac++; // sadrzi bar jednu cifru
+		if (pass.matches(".*[a-z].*"))
+			brojac++; // sadrzi bar jedno malo slovo
+		if (pass.matches(".*[A-Z].*"))
+			brojac++; // sadrzi bar jedno veliko slovo
+		if (pass.matches(".*[a-z].*"))
+			brojac++; // sadrzi bar jedno malo slovo
+		if (pass.matches(".*[^a-zA-Z0-9].*"))
+			brojac++; // sadrzi bar jedno specijalno slovo
+		if (pass.length() > 6)
+			brojac++; // password je duzi od 6 karaktera
+
+		switch (brojac) {
+		case 0:
+		case 1:
+			return PasswordStrength.VERY_WEAK;
+		case 2:
+		case 3:
+			return PasswordStrength.WEAK;
+		case 4:
+			return PasswordStrength.MEDIUM;
+		case 5:
+			return PasswordStrength.STRONG;
+		default:
+			return PasswordStrength.VERY_STRONG;
+		}
+	}
+	
+
+
+	public static String generateFuzzyTime( long current, long time )
+	{
+		long delta = current - time;
+		
+		if(delta < 0) return "not yet";
+		
+		delta = delta / 1000;
+		
+		int[] delioci = {60, 60, 24, 30, 365};
+		
+		int i;
+		for( i = 0; delta > delioci[i]; i++ )
+		{
+			delta = delta / delioci[i];
+		}
+		
+		switch( i )
+		{
+			case 0: return delta == 1 ? "one second ago" :  delta + " seconds ago";
+			case 1: return delta == 1 ? "one minute ago" :  delta + " minutes ago";
+			case 2: return delta == 1 ? "one hour ago" :  delta + " hours ago";
+			case 3: return delta == 1 ? "yesterday" :  delta + " days ago";
+			case 4: return delta == 1 ? "last month" :  delta + " months ago";
+			default: return delta == 1 ? "last year" : delta + " years ago";
+		}
+	}
+	
+	
+    public static List<String> extractUrls(String input) {
+        List<String> result = new ArrayList<String>();
+
+        Pattern pattern = Pattern.compile(
+            "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" + 
+            "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" + 
+            "|mil|biz|info|mobi|name|aero|jobs|museum" + 
+            "|travel|[a-z]{2}))(:[\\d]{1,5})?" + 
+            "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" + 
+            "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
+            "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" + 
+            "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" + 
+            "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" + 
+            "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b");
+
+        Matcher matcher = pattern.matcher(input);
+        while (matcher.find()) {
+            result.add(matcher.group());
+        }
+
+        return result;
+    }
+    
+    
+    public static String replaceWithUrl( String s, List<String> urls )
+    {
+        if( urls == null ) return s;
+        
+        for( String url : urls )
+        	s = s.replaceAll( url, "<a src='" + url + "' />");
+        
+        return s;
+    }
+    
+    
+    
+    
+    public static String nadjiUrlove( String s )
+    {
+    	return replaceWithUrl( s, extractUrls(s) );
+    }
+
+    
+    
+	
+}

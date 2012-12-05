@@ -1,0 +1,102 @@
+package microfb.server.entities;
+
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+
+@Entity
+@NamedQueries({
+		@NamedQuery(name = "Aktivnost.findByMsgFor", query = "SELECT a FROM Aktivnost a WHERE a.msgFor= :msgFor"),
+
+		@NamedQuery(name = "Aktivnost.findChildren", query = "SELECT a FROM Aktivnost a WHERE a.father= :father"),
+
+		@NamedQuery(name = "Aktivnost.countByParent", query = "SELECT COUNT(a) FROM Aktivnost a WHERE a.father = :father"),
+
+		@NamedQuery(name = "Aktivnost.countAktivnostTopLvlFromTo", query = "SELECT COUNT(a) FROM Aktivnost a WHERE a.msgFor = :msgFor AND a.time > :from AND a.time < :to AND top = :true"),
+		@NamedQuery(name = "Aktivnost.findTopLevelFromTo", query = "SELECT a FROM Aktivnost a WHERE a.msgFor = :msgFor AND a.time > :from AND a.time < :to AND top = :true"),
+		@NamedQuery(name = "Aktivnost.findChildrenFromTo", query = "SELECT a FROM Aktivnost a WHERE a.father = :father AND a.time > :from AND a.time < :to")})
+public class Aktivnost implements Serializable {
+	private static final long serialVersionUID = 1L;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long identifier;
+	private Long msgFor;
+	private Long msgFrom;
+	private Long father;
+	private long time;
+	private boolean top;
+	private String info;
+
+	public Aktivnost(){
+		super();
+	}
+	public Aktivnost(Long msgFor,Long msgFrom,Long father,String info){
+		this.msgFor=msgFor;
+		this.msgFrom=msgFrom;
+		this.father=father;
+		time=System.currentTimeMillis();
+		top=(father==null);
+		this.info=info;
+	}
+
+	public long getTime() {
+		return time;
+	}
+
+	public void setTime(long time) {
+		this.time = time;
+	}
+
+	public boolean isTop() {
+		return top;
+	}
+
+	public void setTop(boolean top) {
+		this.top = top;
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+	public long getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(long identifier) {
+		this.identifier = identifier;
+	}
+
+	public long getMsgFor() {
+		return msgFor;
+	}
+
+	public void setMsgFor(long msgFor) {
+		this.msgFor = msgFor;
+	}
+
+	public long getFather() {
+		return father;
+	}
+
+	public void setFather(long father) {
+		this.father = father;
+	}
+
+	public long getMsgFrom() {
+		return msgFrom;
+	}
+
+	public void setMsgFrom(long msgFrom) {
+		this.msgFrom = msgFrom;
+	}
+
+}

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+
+    <!-- Glavni servis -->
+    
+	<servlet>
+	    <servlet-name>UsersServlet</servlet-name>
+	    <servlet-class>microfb.server.Service</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+	    <servlet-name>UsersServlet</servlet-name>
+	    <url-pattern>/microfb/usersService</url-pattern>
+	</servlet-mapping>
+	
+	<!-- Servis za aktivaciju -->
+	
+	<servlet>
+	    <servlet-name>Activation</servlet-name>
+	    <servlet-class>microfb.server.ActivationServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+	    <servlet-name>Activation</servlet-name>
+	    <url-pattern>/activation</url-pattern>
+	</servlet-mapping>
+	
+	<!-- Servis za brisanje korisnika koji su se registrovali vise od 24h ranije -->
+	<servlet>
+	    <servlet-name>CleanRegistration</servlet-name>
+	    <servlet-class>microfb.server.CleanRegistrationServlet</servlet-class>
+	</servlet>
+	
+	<servlet-mapping>
+	    <servlet-name>CleanRegistration</servlet-name>
+	    <url-pattern>/cleanRegistration</url-pattern>
+	</servlet-mapping>
+	
+	
+	<!-- Pocetna strana -->
+	
+	<welcome-file-list>
+		<welcome-file>Home.html</welcome-file>
+	</welcome-file-list>
+</web-app>

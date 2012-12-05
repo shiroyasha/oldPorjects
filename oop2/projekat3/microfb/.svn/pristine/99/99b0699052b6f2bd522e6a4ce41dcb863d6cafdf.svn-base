@@ -1,0 +1,44 @@
+package microfb.server;
+
+import java.io.IOException;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import microfb.shared.IO.KorisnikIO;
+
+import com.google.gwt.core.client.GWT;
+
+/**
+ * Servlet kom se prosledjuju "klikovi" na aktivacione linkove. Veza izmedju
+ * aktivacionih linkova i ovog objekta je data u fajlu web.xml
+ * 
+ * @author <a href="mitrovic.dejan@gmail.com">Dejan Mitrovic</a>
+ * @version 1.0
+ */
+public class ActivationServlet extends HttpServlet
+{
+	private static final long serialVersionUID = 1L;
+	
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException
+	{
+		String code = req.getParameter("code");
+
+		KorisnikIO korisnik = EntityHelper.getKorisnikByRegistrationCode( code );
+		if( korisnik != null )
+		{
+			List<String> emails = EntityHelper.getAllEmails();
+			
+			for( String email : emails )
+			{
+				if( !email.equals( korisnik.getEmail() ) )
+					Service.sendMail(email, "New user on microfb", "Please welcome our new member " + korisnik.getIme() );
+			}
+		}
+	}
+}

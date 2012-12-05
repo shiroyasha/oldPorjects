@@ -1,0 +1,10 @@
+form(method='POST')
+  p Title
+  input(name='title',value='#{post.title}')
+  p Text
+  textarea(name='text', cols=80, rows=30) #{post.text}
+  input(type='checkbox', name='updateDate', checked='true')
+  | Update Date?
+  br
+  input(type='submit')
+

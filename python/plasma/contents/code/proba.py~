@@ -1,0 +1,9 @@
+# -*- coding: utf-8 -*-
+import imaplib, re
+
+def bla(text):
+  print text
+  print text
+  
+
+bla("proba")

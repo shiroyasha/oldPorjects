@@ -1,0 +1,79 @@
+package microfb.shared;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class Utilities implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+
+
+	public Utilities() {
+		super();
+	}
+
+	enum PasswordStrength {
+		VERY_WEAK, WEAK, MEDIUM, STRONG, VERY_STRONG, TOO_SHORT
+	}
+	
+	public static PasswordStrength passwordStrength(String pass) {
+		if (pass.length() < Validator.MINIMUM_PASSWORD_LENGTH)
+			return PasswordStrength.TOO_SHORT;
+
+		int brojac = 0;
+
+		if (pass.matches(".*\\d.*"))
+			brojac++; // sadrzi bar jednu cifru
+		if (pass.matches(".*[a-z].*"))
+			brojac++; // sadrzi bar jedno malo slovo
+		if (pass.matches(".*[A-Z].*"))
+			brojac++; // sadrzi bar jedno veliko slovo
+		if (pass.matches(".*[a-z].*"))
+			brojac++; // sadrzi bar jedno malo slovo
+		if (pass.matches(".*[^a-zA-Z0-9].*"))
+			brojac++; // sadrzi bar jedno specijalno slovo
+		if (pass.length() > 6)
+			brojac++; // password je duzi od 6 karaktera
+
+		switch (brojac) {
+		case 0:
+			return PasswordStrength.VERY_WEAK;
+		case 2:
+			return PasswordStrength.WEAK;
+		case 4:
+			return PasswordStrength.MEDIUM;
+		case 5:
+			return PasswordStrength.STRONG;
+		default:
+			return PasswordStrength.VERY_STRONG;
+		}
+	}
+	
+
+
+	public static String generateFuzzyTime( Date current, Date time )
+	{
+		long delta = current.getTime() - time.getTime();
+		
+		if(delta < 0) return "not yet";
+		
+		int[] delioci = {60, 60, 24, 30, 365};
+		
+		int i;
+		for( i = 0; delta > delioci[i]; i++ )
+		{
+			delta = delta / delioci[i];
+		}
+		
+		switch( i )
+		{
+			case 0: return delta == 1 ? "one second ago" :  delta + " seconds ago";
+			case 1: return delta == 1 ? "one minute ago" :  delta + " minutes ago";
+			case 2: return delta == 1 ? "one hour ago" :  delta + " hours ago";
+			case 3: return delta == 1 ? "yesterday" :  delta + " days ago";
+			case 4: return delta == 1 ? "last month" :  delta + " months ago";
+			default: return delta == 1 ? "last year" : delta + " years ago";
+		}
+	}
+	
+}

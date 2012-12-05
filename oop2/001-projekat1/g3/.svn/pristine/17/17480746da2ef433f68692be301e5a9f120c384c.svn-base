@@ -1,0 +1,205 @@
+package gui;
+
+import gui.stranice.AgentSetupPage;
+import gui.stranice.RaceResultsPage;
+import gui.stranice.RaceViewPage;
+import gui.stranice.ServerSetupPage;
+import gui.stranice.StartPage;
+
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import server.MainServer;
+import shared.ServerInfo;
+
+
+/**
+ * 
+ * @author Igor Sarcevic ( igisar@gmail.com )
+ * 
+ * GlavniGui je klasa koja implementira kontrolni prozor
+ * servera koji nadgleda agente.
+ *
+ * Bazira se na koriscenju CardLayout layout managera
+ * te su mu potrebne stranice koje moze da 'vrti'.
+ * Takve stranice su obicno podklasa klase JComponent.
+ *
+ * Implementacija samih stranica nalazi se u paketu gui.stranice
+ * gde se nalaze StartPage, ServerSetupPage, AgentSetupPage, RaceViewPage,
+ * RaceResultPage. Kada se stranice dodaju u CardLayout one moraju biti 
+ * zadate u redosledu u kojem zelimo da ih vidimo, te nije pametno menjati
+ * taj redosled.
+ *
+ * GlavniGui je odgovoran za svoje prikazivanje, pa nije potrebno explicitno
+ * pozivati setVisible na njenim instancama
+ *
+ * Predvidjeno je da se sama igra moze vise puta odigrati tokom zivota aplikacije
+ * pa je napravljena metoda reset koja nakon zavrsetka jedne igre vraca svaku stranicu
+ * na prvobitno stanje.
+ *
+ * Next page je metoda koji pozivaju same stranice kada zele da sledeca strana bude 
+ * prikazana, pa iz istog razloga one kao argument primaju instancu Glavnog Gui-a da
+ * bi mogli da pristupe datoj metodi.
+ * 
+ * !!! VAZNO
+ * Instanca ove klase sluzi i za komunikaciju su serverom koji nadgleda agente, i
+ * narocito je vazno da je ovo jedina klasa koja sluzi za to. Drugim recima nema
+ * potrebe traziti metode u ostalim klasama gui dela sa za prosledjivanje informacija.
+ *
+ * Opis samih klasa za komunikaciju nalazi se iznad njihovog zaglavlja.
+ *
+ *
+ */
+
+@SuppressWarnings("serial")
+public class GlavniGui extends JFrame
+{
+	StartPage startPage;
+	ServerSetupPage serverSetupPage;
+	AgentSetupPage agentSetupPage;
+	RaceViewPage raceViewPage;
+	RaceResultsPage raceResultsPage;
+	
+	JPanel centralPanel;
+
+	MainServer mainServer;
+	
+	public GlavniGui( List<ServerInfo> serveri ) 
+	{
+		
+		setTitle("Agent Race Game");
+		setSize(640, 480);
+		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+		
+		centralPanel = new JPanel( new CardLayout() );
+		
+		startPage = new StartPage(this);
+		agentSetupPage = new AgentSetupPage(this);
+		serverSetupPage = new ServerSetupPage(this, serveri);
+		raceViewPage = new RaceViewPage(this);
+		raceResultsPage = new RaceResultsPage(this);
+		
+		centralPanel.add( startPage, "startPage" );
+		centralPanel.add( serverSetupPage, "serverSetupPage" );
+		centralPanel.add( agentSetupPage , "agentSetupPage");
+		centralPanel.add( raceViewPage , "raceViewPage");
+		centralPanel.add( raceResultsPage, "raceResultPage" );
+		
+		add( centralPanel, BorderLayout.CENTER );
+		
+		this.setVisible(true);
+	}
+	
+
+	public void reset() 
+	{	
+		startPage.reset();
+		agentSetupPage.reset();
+		serverSetupPage.reset();
+		raceViewPage.reset();
+		raceResultsPage.reset();
+		
+		mainServer = null;
+		
+		nextPage();
+	}
+	
+	
+	public void nextPage()
+	{
+		( (CardLayout)centralPanel.getLayout() ).next( centralPanel );
+	}
+	
+
+	public void setAgentList(List<String> agenti) 
+	{
+		raceViewPage.setAgentList(agenti);	
+	}
+	
+	
+	/*
+     *  
+     *  metode koje pozivaju metode koje pruza servera
+     *
+     */
+    
+    /*
+     *  Metoda startRace se poziva od strane RaceViewPage-a kada je primecen
+     *  klik na dugme Start. 
+     *
+     *  Implementacija metoda je odgovorna za davanje signala serveru da igra
+     *  moze da pocne, kao i informaciju o tome koje je agente i servere izabrao
+     *  korisnik. Najverovatnije ce biti prosledjini kao niz nekih klasa.  
+     *  
+     *  Kada server primi obavestanje o startu igre ono bi trebalo da javi 
+     *  putem raceStarted metode da je pripremila agente  
+     */
+	public void startRace() 
+	{
+		try
+		{
+			mainServer = new MainServer("", this, serverSetupPage.getServerList().toArray( new ServerInfo[0] ), agentSetupPage.getAgentList() );
+			mainServer.startRace();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			System.out.println("FATAL ERROR ^_^");
+			System.exit(0);
+		}
+	}
+
+	
+	
+	/*
+	 * 
+	 *  metode koje poziva server koji nadgleda agente
+	 *
+     */
+
+
+	/*
+     *  Kada je server primio informaciju o startu igre i nakon sto je pripremio agente
+     *  treba da pozove metod raceStarted kako bi javila gui-u da je igra zapoceta.
+     *
+     *  To se u samom gui-u primecuju tako sto dugme start postane setEnabled(false) ili 
+     *  mozda u nekoj sledecoj verziji nestane.
+     */
+	public void raceStarted()
+	{
+		raceViewPage.raceStarted();
+	}
+	
+    /*  
+     *  Kada (i iskljucivo tada) je igra u toku server za nadgledanje salje informaciju
+     *  o promeni lokaciji agenta, tako sto navede index agenta, i posalje instancu 
+     *  ServerInfo o informacijama o serveru gde se taj agent trenutno nalazi.
+     *  Ukoliko je agent zavrsio svoj put to server javlja preko argumenta finished.
+     *
+     *  Kada to server uradi u raceViewPage moze se primetiti dodat server u niz servera
+     *  koje je agent posetio.
+     *
+     */
+	public void addVisitedServer( int indexOfAgent, ServerInfo info, boolean finished )
+	{
+		raceViewPage.addVisitedServer( indexOfAgent, info , finished );
+	}
+
+
+	/* 
+     *  Kada se igra zavrsila ( svi agenti su stigli nazad ) server salje informaciju
+     *  gui-u da on moze da prikaze sledecu stranicu, tj. stranicu za prikaz rezultata.
+     */  
+	public void raceFinished( String[] imena, Integer[] vreme )
+	{
+		raceResultsPage.setResults( imena, vreme );
+		nextPage();
+	}
+
+}
+
+

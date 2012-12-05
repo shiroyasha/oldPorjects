@@ -1,0 +1,70 @@
+package microfb.client.services;
+
+import java.util.List;
+
+import microfb.shared.IO.AktivnostIO;
+import microfb.shared.IO.ImageIO;
+import microfb.shared.IO.KorisnikIO;
+import microfb.shared.IO.TypeIO;
+
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+
+@RemoteServiceRelativePath("usersService")
+public interface MicroFBService extends RemoteService
+{
+	/**
+	 * @param mail - logujemo se sa mailom
+	 * @param password
+	 * @return - vraca sessionID string
+	 */
+	String login( String mail, String password ) throws IllegalArgumentException;
+	void logout( String sessionID ) throws IllegalArgumentException;
+	void register( String email, String password, String name, String birthdate, 
+            String city, String workplace, String quote, String sex  ) throws IllegalArgumentException;
+	
+	
+	
+	KorisnikIO getKorisnik( String sessionID ) throws IllegalArgumentException;
+	List<KorisnikIO> getAllKorisnik( String sessionID ) throws IllegalArgumentException;
+	List<KorisnikIO> searchForKorisnik( String sessionID, String queryString ) throws IllegalArgumentException;
+	
+	void updateKorisnik( String sessionID, KorisnikIO korisnik ) throws IllegalArgumentException;
+	
+	void setCoverPhoto( String sessionID, ImageIO photo ) throws IllegalArgumentException;
+	void setProfilePhoto( String sessionID, ImageIO photo ) throws IllegalArgumentException;
+	
+	ImageIO getCoverPhoto( String sessionID) throws IllegalArgumentException;
+	ImageIO getProfilePhoto( String sessionID) throws IllegalArgumentException;
+
+	/**
+	 * @param from - pocetni index aktivnosti, ukoliko je nula vrati pocevsi od najsvezije aktivnosti
+	 * @param count - koliko aktivnosti
+	 * @param onlyPersonal - sve aktivnosti sa zida ili samo one koje je taj korisnik prouzrokovao
+	 * @return lista aktivosti, lista.size moze biti manja od count ukuliko nema dovoljno postova da se napuni
+	 */
+	List<AktivnostIO> getWallItems(String sessionID, int from, int count, boolean onlyPersonal ) throws IllegalArgumentException;
+	List<AktivnostIO> getWallItemsForKorisnik(String sessionID, KorisnikIO korisnikIO, int from, int count, boolean onlyPersonal ) throws IllegalArgumentException;
+	
+	
+	
+	/**
+	 * @param string - vrednost, moze biti i url ali onda treba navesti u tipu
+	 * @param tip - enum, moze biti string, url, video, audio, picture, ... 
+	 * @return
+	 */
+	boolean post( String sessionID, String value, TypeIO tip ) throws IllegalArgumentException;
+	boolean updatePost( String sessionID, AktivnostIO aktivnostIO, String value, TypeIO tip ) throws IllegalArgumentException;
+	boolean deletePost( String sessionID, AktivnostIO aktivnostIO ) throws IllegalArgumentException;
+	
+	
+	/**
+	 * likeEnabled vraca false ukoliko je korisnik vec udario like/unlike na aktivnost
+	 * takodje za aktivnost koje su same po sebi like vraca false ( nema smisla like-ovati like )
+	 */
+	boolean likeEnabled( String sessionID, AktivnostIO aktivnostIO ) throws IllegalArgumentException;
+	boolean like( String sessionID, AktivnostIO aktivnostIO ) throws IllegalArgumentException;
+	boolean unlike( String sessionID, AktivnostIO aktivnostIO ) throws IllegalArgumentException;
+	
+}
+

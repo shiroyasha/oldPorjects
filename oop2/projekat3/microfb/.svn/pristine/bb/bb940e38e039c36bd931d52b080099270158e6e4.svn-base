@@ -1,0 +1,121 @@
+package microfb.client.pages;
+
+import microfb.client.widgets.ButtonFB;
+import microfb.client.widgets.PassBoxFB;
+import microfb.client.widgets.TextBoxFB;
+import microfb.shared.Validator;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.RootPanel;
+
+
+public class LoginPage extends AbstractPage {
+
+	public LoginPage(RootPanel page, String style) {
+		super(page, style);
+		page.setStyleName("dialogPage");
+	}
+	
+	@Override
+	protected void defineElements() {
+		if (loggedIn() != null)	new HomePage(panels.get("homePage"), "homePage");
+		
+		final HTML title = new HTML();
+		title.setHTML("<h1>Users</h1><hr/>");
+		addElement(title);
+		
+		addElement(new HTML("E-Mail:"));
+		final TextBoxFB user = new TextBoxFB();
+		addElement(user);
+		addElement(new HTML("Password:"));
+		final PassBoxFB pass = new PassBoxFB();
+		addElement(pass);
+		HTML br = new HTML();
+		br.setHTML("<br/>");
+		addElement(br);
+		
+		final ButtonFB log = new ButtonFB("Login");
+		addElement(log);
+		final ButtonFB b = new ButtonFB("Menu");
+		addElement(b);
+		final ButtonFB logout = new ButtonFB("Logout");
+		logout.setVisible(false);
+		addElement(logout);		
+		final Image loading = new Image("/images/AJAXanim.gif");
+		loading.setVisible(false);
+		addElement(loading);
+		
+		b.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				new DialogPage(panels.get("dialogPage"), "dialogPage");
+			}
+		});
+
+		logout.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				logout.setVisible(false);
+				log.setVisible(false);
+				b.setVisible(false);
+				loading.setVisible(true);
+				logOut();
+			}
+		});
+		
+		log.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				loading.setVisible(true);
+				log.setVisible(false);
+				b.setVisible(false);
+				logout.setVisible(false);
+				
+				if (loggedIn() != null) { 
+					new HomePage(panels.get("homePage"), "homePage");
+				}
+				if (Validator.email(user.getText()) && Validator.password(pass.getText()))
+					service.login(user.getText(), pass.getText(), false, new AsyncCallback<String>() {
+						
+						@Override
+						public void onSuccess(String result) {
+							if (result == null || result.equals(""))
+								title.setHTML("<h1 style=\"color: red;\">Invalid login!</h1><hr/>");
+							else {
+								try {
+									logIn(result);
+								} catch (Exception e) {
+									title.setHTML("<h1 style=\"color: red;\">Cookies are disabled!</h1><hr/>");
+									log.setVisible(true);
+									logout.setVisible(false);
+									b.setVisible(true);
+									loading.setVisible(false);
+								}
+							}
+						}
+						
+						@Override
+						public void onFailure(Throwable caught) {
+							title.setHTML("<h1 style=\"color: red; font-size: 12px;\">Error: " + caught.getMessage() + "</h1><hr/>");
+							log.setVisible(true);
+							logout.setVisible(false);
+							b.setVisible(true);
+							loading.setVisible(false);
+						}
+					});
+				else {
+					title.setHTML("<h1 style=\"color: red;\">Check your data!</h1><hr/>");
+					log.setVisible(true);
+					logout.setVisible(false);
+					b.setVisible(true);
+					loading.setVisible(false);
+				}
+			}
+		});
+	}
+
+}

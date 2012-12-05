@@ -1,0 +1,168 @@
+@import url(http://fonts.googleapis.com/css?family=Righteous|Andada&subset=latin,latin-ext);
+
+
+body {
+  /*padding: 50px;*/
+  /*font-family: 'Andada', serif;*/
+}
+
+a {
+  color: #00B7FF;
+}
+
+
+#header
+{
+    height : 200px;
+    background-color: #00B7FF;
+}
+
+#content
+{
+    margin:auto;
+    width:800px;   
+}
+
+#left
+{
+    width : 200px;
+}
+
+#center
+{
+    
+}
+
+#right
+{
+    width : 200px;
+}
+
+.blogPost
+{
+    padding : 20px;
+    font-color : #6699FF;
+}
+
+
+/*
+ *
+ *  Blog post
+ *
+ */
+
+/*
+ * header
+*/
+.postHeader
+{
+    padding-left : 20px;
+    padding-bottom : 10px;
+    border-bottom: 1px solid #aaaaaa;
+}
+
+.postHeader .postTitle, .postHeader .postAutor
+{
+    display : inline;
+}
+
+.postHeader .postAutor a
+{
+    color : black;
+    text-decoration : none;
+}
+
+.postHeader .postAutor a:hover
+{
+    color:green;
+    text-decoration: underline;
+}
+
+/*
+ * footer
+*/
+
+.postFooter
+{
+    margin : 2em;
+    margin-top : 0em;
+}
+
+.postFooter .comentsHeader
+{
+    padding : 5px;
+    border-bottom : 1px solid #aaaaaa;
+    border-top : 1px solid #aaaaaa;
+}
+
+.postFooter .comentsHeader p
+{
+    display : inline;
+    font-color : #aaaacc;
+}
+
+/*
+ * Post Text
+*/
+.postText
+{
+    margin-left : 1em;
+    margin-right : 1em;
+    padding-top : 0em;
+}
+
+.comments
+{
+}
+
+.commentText
+{
+    font-size: 10pt;
+}
+.commentDatum
+{
+    font-size: 8pt;
+}
+
+.blogComment
+{
+    padding : 5px;
+    background-color : #EEEEEE;
+}
+
+.blogComment p
+{
+    margin : 0.3em;
+}
+
+
+/*
+ * Login
+*/
+
+/*
+ * navigation
+*/
+#navigation
+{
+    margin: auto;
+    width : 800px;
+    border-bottom: 1px #777 solid;
+    padding-bottom : 1em;
+    padding-top : 1em;    
+}
+
+#navigation li
+{
+    display: inline;
+    margin : 20px;
+}
+
+#navigation li a, #login
+{
+    text-decoration: none;
+    font-size: 25px;
+    display : inline;
+}
+
+

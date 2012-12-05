@@ -1,0 +1,749 @@
+package microfb.server;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Query;
+
+import com.google.appengine.api.datastore.Blob;
+
+import microfb.shared.IO.*;
+import microfb.server.entities.*;
+
+public class EntityHelper {
+	public static Korisnik getKorisnikByEmail(String email) {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Korisnik.findByEmail");
+			q.setParameter("email", email);
+			@SuppressWarnings("unchecked")
+			List<Korisnik> qresult = q.getResultList();
+			if (qresult.isEmpty()) {
+				return null;
+			}
+			return qresult.get(0);
+		} finally {
+			em.close();
+		}
+	}
+
+	public static Korisnik getKorisnikBySessionId(String sessionID) {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Korisnik.findBySessionID");
+			q.setParameter("sessionID", sessionID);
+			@SuppressWarnings("unchecked")
+			List<Korisnik> qresult = q.getResultList();
+			if (qresult.isEmpty()) {
+				return null;
+			}
+			return qresult.get(0);
+		} finally {
+			em.close();
+		}
+	}
+
+	public static boolean userExists(String mail) {
+		Korisnik kor = getKorisnikByEmail(mail);
+		return (kor != null);
+	}
+
+	public static boolean sessionIDExists(String string) {
+		EntityManager em = EMF.get();
+		try {
+			return (getKorisnikBySessionId(string) != null);
+		} finally {
+			em.close();
+		}
+	}
+
+	public static String getSessionID(String mail) {
+		EntityManager em = EMF.get();
+		try {
+			Korisnik kor = getKorisnikByEmail(mail);
+			if (kor == null) {
+				return "";
+			}
+			return kor.getSessionID();
+		} finally {
+			em.close();
+		}
+	}
+
+	public static void setSessionID(String email, String sessionID,
+			boolean stayLoggedIn) throws Exception {
+		EntityManager em = EMF.get();
+		try {
+			Korisnik k = getKorisnikByEmail(email);
+			if (k != null) {
+				EntityTransaction et = em.getTransaction();
+				et.begin();
+				try {
+					k.setSessionID(sessionID);
+					k.setStayLoggedIn(stayLoggedIn);
+					em.merge(k);
+					et.commit();
+				} catch (Exception ex) {
+					et.rollback();
+					throw ex;
+				}
+			}
+		} finally {
+			em.close();
+		}
+	}
+
+	public static List<Korisnik> findKirisnikByQueryString(String queryString) {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Korisnik.findByEmail");
+			q.setParameter("email", queryString);
+			@SuppressWarnings("unchecked")
+			List<Korisnik> qresult = q.getResultList();
+			if (!qresult.isEmpty()) {
+				return qresult;
+			}
+			Query d = em.createNamedQuery("Korisnik.findByName");
+			d.setParameter("name", queryString);
+			@SuppressWarnings("unchecked")
+			List<Korisnik> dresult = d.getResultList();
+			if(qresult.isEmpty()){
+				return null;
+			}
+			return dresult;
+		} finally {
+			em.close();
+		}
+	}
+
+	public static boolean updateKorinik(KorisnikIO k) {
+		if (k != null) {
+			String email = k.getEmail();
+			EntityManager em = EMF.get();
+			try {
+				Korisnik kor = getKorisnikByEmail(email);
+				if (kor == null) {
+					return false;
+				} else {
+					EntityTransaction et = em.getTransaction();
+					et.begin();
+					try {
+						kor.setEmail(k.getEmail());
+						kor.setName(k.getIme());
+						kor.setPassword(k.getPassword());
+						kor.setBirthdate(k.getBirthdate());
+						kor.setCity(k.getCurrentCity());
+						kor.setWorkplace(k.getWorkplace());
+						kor.setQuote(k.getQuote());
+						kor.setSex(k.getSex());
+						em.merge(kor);
+						et.commit();
+					} catch (Exception ex) {
+						et.rollback();
+						return false;
+					}
+					return true;
+				}
+			} finally {
+				em.close();
+			}
+		}
+		return false;
+	}
+
+	public static List<Korisnik> getAllKorisnik() {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Korisnik.all");
+			@SuppressWarnings("unchecked")
+			List<Korisnik> qresult = q.getResultList();
+			List<Korisnik> result = new ArrayList<Korisnik>(qresult);
+			if (result.isEmpty()) {
+				return null;
+			}
+			return result;
+		} finally {
+			em.close();
+		}
+	}
+
+	public static List<String> getAllEmails() {
+		EntityManager em = EMF.get();
+		try {
+			List<Korisnik> korisnici = getAllKorisnik();
+			if (korisnici != null) {
+				List<String> emailList = new ArrayList<String>();
+				for (Korisnik kor : korisnici) {
+					if (kor.isActivated()) {
+						emailList.add(kor.getEmail());
+					}
+				}
+				if (emailList.isEmpty()) {
+					return null;
+				}
+				return emailList;
+			}
+			return null;
+		} finally {
+			em.close();
+		}
+	}
+
+	public static Korisnik getKorisnikByRegistrationCode(String code) {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Korisnik.findByRCode");
+			q.setParameter("actCode", code);
+			Korisnik kor = (Korisnik)q.getSingleResult();
+			return kor;
+		} finally {
+			em.close();
+		}
+	}
+
+	public static void activateKorisnik(String email) throws Exception {
+		EntityManager em = EMF.get();
+		try {
+			Korisnik kor = getKorisnikByEmail(email);
+			if (kor != null) {
+				EntityTransaction et = em.getTransaction();
+				et.begin();
+				try {
+					kor.setActivated(true);
+					em.merge(kor);
+					et.commit();
+				} catch (Exception ex) {
+					et.rollback();
+					throw ex;
+				}
+
+				Slike s = new Slike(kor.getId(), null, null);
+				et.begin();
+				try {
+					em.persist(s);
+					et.commit();
+				} catch (Exception e) {
+					et.rollback();
+					throw e;
+				}
+			}
+		} finally {
+			em.close();
+		}
+	}
+
+	public static boolean isActivated(String email) {
+		EntityManager em = EMF.get();
+		try {
+			Korisnik kor = getKorisnikByEmail(email);
+			if (kor == null) {
+				return false;
+			}
+			return (kor.isActivated());
+		} finally {
+			em.close();
+		}
+	}
+
+	public static void createNewKorisnik(String email, String password,
+			String name, String birthdate, String city, String workplace,
+			String quote, String sex, String actCode) throws Exception {
+
+		EntityManager em = EMF.get();
+		EntityTransaction et = em.getTransaction();
+		try {
+			Korisnik k = new Korisnik(email, password, name, birthdate, city,
+					workplace, quote, sex, actCode);
+
+			et.begin();
+			try {
+				em.persist(k);
+				et.commit();
+			} catch (Exception ex) {
+				et.rollback();
+				throw ex;
+			}
+			
+			Slike s = new Slike(k.getId(), new Blob( new byte[0] ), new Blob( new byte[0] ));
+			et.begin();
+			try {
+				em.persist(s);
+				et.commit();
+			} catch (Exception ex) {
+				et.rollback();
+				throw ex;
+			}
+			
+		} finally {
+			em.close();
+		}
+	}
+
+	// poboljsati ako bude vremena
+	public static void refreshKorisnik() throws Exception {
+		EntityManager em = EMF.get();
+		EntityTransaction et = em.getTransaction();
+		try {
+			List<Korisnik> korisnik = getAllKorisnik();
+			for (Korisnik kor : korisnik) {
+				if ((!kor.isActivated())
+						&& ((System.currentTimeMillis() - kor
+								.getRegistrationTime()) > 86400000)) {
+					et.begin();
+					try {
+						em.remove(kor);
+						et.commit();
+					} catch (Exception ex) {
+						et.rollback();
+						throw ex;
+					}
+				}
+
+			}
+
+		} finally {
+			em.close();
+		}
+	}
+
+	public static void userActive(String sessionID) throws Exception {
+		//System.out.println("useractive " + sessionID);
+		if( sessionID == null ) return;
+		EntityManager em = EMF.get();
+		try {
+			Korisnik korisnik = getKorisnikBySessionId(sessionID);
+			if (korisnik != null) {
+				EntityTransaction et = em.getTransaction();
+				et.begin();
+				try {
+					korisnik.setLastActive(System.currentTimeMillis());
+					em.merge(korisnik);
+					et.commit();
+				} catch (Exception ex) {
+					if( et.isActive() )
+						et.rollback();
+					throw ex;
+				}
+			}
+		} finally {
+			em.close();
+		}
+	}
+
+	// ukoliko bude vremena realizovati efikasnije
+	public static void refreshLoggedin() throws Exception {
+		EntityManager em = EMF.get();
+		EntityTransaction et = em.getTransaction();
+		try {
+			List<Korisnik> korisnik = getAllKorisnik();
+			for (Korisnik kor : korisnik) {
+				if ((!kor.getSessionID().equalsIgnoreCase(""))
+						&& ((System.currentTimeMillis() - kor.getLastActive()) > 1800000)
+						&& !kor.isStayLoggedIn()) {
+					et.begin();
+					try {
+						kor.setSessionID("");
+						em.merge(kor);
+						et.commit();
+					} catch (Exception ex) {
+						et.rollback();
+						throw ex;
+					}
+				}
+			}
+		} finally {
+			em.close();
+		}
+	}
+
+	public static List<Aktivnost> getChildren(Long identifier) {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Aktivnosti.findChildren");
+			q.setParameter("father", identifier);
+			@SuppressWarnings("unchecked")
+			List<Aktivnost> qresult = q.getResultList();
+			List<Aktivnost> result = new ArrayList<Aktivnost>(qresult);
+			if (result.isEmpty()) {
+				return null;
+			}
+			return result;
+		} finally {
+			em.close();
+		}
+
+	}
+
+	public static void setCoverPhoto(String email, ImageIO photo) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public static void setProfilePhoto(String email, ImageIO photo) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/*
+	 * 
+	 * 
+	 * NOVE!
+	 */
+
+	public static boolean likeEnabled(String sessionID, Long identifier) {
+		Korisnik kor = getKorisnikBySessionId(sessionID);
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Svidjanje.findByAktivnostFrom");
+			q.setParameter("identifier", identifier);
+			q.setParameter("from", kor.getId());
+			@SuppressWarnings("unchecked")
+			List<Svidjanje> qresult = q.getResultList();
+			return (qresult.isEmpty());
+		} finally {
+			em.close();
+		}
+	}
+
+	// Igoreva verzija vraca String, pretpostavljan da je greskom tako stavio
+	public static Korisnik getKorisnikById(long msgFrom) {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Korisnik.findById");
+			q.setParameter("id", msgFrom);
+			@SuppressWarnings("unchecked")
+			List<Korisnik> qresult = q.getResultList();
+			if (qresult.isEmpty()) {
+				return null;
+			}
+			return qresult.get(0);
+		} finally {
+			em.close();
+		}
+	}
+
+	public static void addLike(String sessionID, Long identifier, int type)
+			throws Exception {
+		Korisnik kor = getKorisnikBySessionId(sessionID);
+		EntityManager em = EMF.get();
+		try {
+			EntityTransaction et = em.getTransaction();
+			Svidjanje svidjanje = new Svidjanje(kor.getId(), identifier, type);
+			et.begin();
+			try {
+				em.persist(svidjanje);
+				et.commit();
+			} catch (Exception e) {
+				et.rollback();
+				throw e;
+			}
+
+		} finally {
+			em.close();
+		}
+	}
+
+	public static long getAktivnostLikes(long identifier) {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Svidjanje.countSvidjanjeByType");
+			q.setParameter("identifier", identifier);
+			q.setParameter("type", 1);
+			return ((Number) q.getSingleResult()).longValue();
+		} finally {
+			em.close();
+		}
+	}
+
+	public static long getAktivnostDislikes(long identifier) {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Svidjanje.countSvidjanjeByType");
+			q.setParameter("identifier", identifier);
+			q.setParameter("type", -1);
+			return ((Number) q.getSingleResult()).longValue();
+		} finally {
+			em.close();
+		}
+	}
+
+	public static long countAktivnosti(Long parent) {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Aktivnost.countByParent");
+			q.setParameter("father", parent);
+			return ((Number) q.getSingleResult()).longValue();
+		} finally {
+			em.close();
+		}
+	}
+
+	public static long countAktivnosti(String email, long from, long to) {
+		Korisnik kor = getKorisnikByEmail(email);
+		EntityManager em = EMF.get();
+		try {
+			Query q = em
+					.createNamedQuery("Aktivnost.countAktivnostTopLvlFromTo");
+			q.setParameter("msgFor", kor.getId());
+			if (from == -1) {
+				q.setParameter("from", Long.MIN_VALUE);
+			} else {
+				q.setParameter("from", from);
+			}
+			if (to == -1) {
+				q.setParameter("from", Long.MAX_VALUE);
+			} else {
+				q.setParameter("to", to);
+			}
+			return ((Number) q.getSingleResult()).longValue();
+		} finally {
+			em.close();
+		}
+	}
+
+	public static List<Aktivnost> getAktivnosti(String email, long from, long to) {
+		System.out.println("getActivnosti" + email +  from + to);
+		Korisnik kor = getKorisnikByEmail(email);
+		System.out.println("getAktivnosti 1");
+		EntityManager em = EMF.get();
+		try {
+			System.out.println("getAktivnosti 2");
+			Query q = em.createNamedQuery("Aktivnost.findTopLevelFromTo");
+			q.setMaxResults(10);
+			System.out.println(kor.getId());
+			
+			q.setParameter("msgFor", kor.getId());
+			
+			if (from == -1) {
+				System.out.println("getAktivnosti 3");
+				q.setParameter("from", Long.MIN_VALUE);
+			} else {
+				q.setParameter("from", from);
+			}
+			if (to == -1) {
+				System.out.println("getAktivnosti 3.5");
+				q.setParameter("to", Long.MAX_VALUE);
+			} else {
+				q.setParameter("to", to);
+			}
+			System.out.println("getAktivnosti 4");
+			@SuppressWarnings("unchecked")
+			List<Aktivnost> qresult = q.getResultList();
+			List<Aktivnost> result = new ArrayList<Aktivnost>(qresult);
+			System.out.println("getAktivnosti 5");
+			System.out.println(qresult.size() + " " + result.size());
+			return result;
+		} finally {
+			em.close();
+		}
+	}
+
+	public static List<Aktivnost> getAktivnosti(Long parent, long from, long to) {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Aktivnost.findChildrenFromTo");
+			q.setParameter("father", parent);
+			if (from == -1) {
+				q.setParameter("from", Long.MIN_VALUE);
+			} else {
+				q.setParameter("from", from);
+			}
+			if (to == -1) {
+				q.setParameter("to", Long.MAX_VALUE);
+			} else {
+				q.setParameter("to", to);
+			}
+			@SuppressWarnings("unchecked")
+			List<Aktivnost> qresult = q.getResultList();
+			List<Aktivnost> result = new ArrayList<Aktivnost>(qresult);
+			return result;
+		} finally {
+			em.close();
+		}
+	}
+
+	public static void addAktivnost(String sessionID, Long parent, String value)
+			throws Exception {
+		Korisnik kor = getKorisnikBySessionId(sessionID);
+		EntityManager em = EMF.get();
+		try {
+			Aktivnost a = new Aktivnost(kor.getId(), kor.getId(), parent, value);
+			EntityTransaction et = em.getTransaction();
+			et.begin();
+			try {
+				em.persist(a);
+				et.commit();
+			} catch (Exception ex) {
+				et.rollback();
+				throw ex;
+			}
+		} finally {
+			em.close();
+		}
+	}
+
+	public static void addAktivnost(String sessionID, String userEmail,
+			String value) throws Exception {
+		Korisnik kor = getKorisnikBySessionId(sessionID);
+		Korisnik kor2 = getKorisnikByEmail(userEmail);
+		EntityManager em = EMF.get();
+		try {
+			Aktivnost a = new Aktivnost(kor2.getId(), kor.getId(), null, value);
+			EntityTransaction et = em.getTransaction();
+			et.begin();
+			try {
+				em.persist(a);
+				et.commit();
+			} catch (Exception ex) {
+				et.rollback();
+				throw ex;
+			}
+		} finally {
+			em.close();
+		}
+	}
+
+	public static void deleteAktivnost(Long aktivnostID) throws Exception {
+		EntityManager em = EMF.get();
+		EntityTransaction et = em.getTransaction();
+		try {
+			Query q = em
+					.createNamedQuery("Svidjanje.findByAktivnostIdentifier");
+			q.setParameter("identifier", aktivnostID);
+			@SuppressWarnings("unchecked")
+			List<Svidjanje> qresult = q.getResultList();
+			if (!qresult.isEmpty()) {
+				for (Svidjanje s : qresult) {
+					et.begin();
+					try {
+						em.remove(s);
+						et.commit();
+					} catch (Exception ex) {
+						et.rollback();
+						throw ex;
+					}
+				}
+			}
+			Query d = em.createNamedQuery("Aktivnost.findChildren");
+			d.setParameter("father", aktivnostID);
+			@SuppressWarnings("unchecked")
+			List<Aktivnost> dresult = q.getResultList();
+			if (!dresult.isEmpty()) {
+				for (Aktivnost a : dresult) {
+					deleteAktivnost(a.getIdentifier());
+				}
+			}
+			Query a = em.createNamedQuery("Aktivnost.findById");
+			a.setParameter("identifier", aktivnostID);
+			@SuppressWarnings("unchecked")
+			List<Aktivnost> aresult = a.getResultList();
+			if (!aresult.isEmpty()) {
+				et.begin();
+				try {
+					em.remove(aresult.get(0));
+					et.commit();
+				} catch (Exception ex) {
+					et.rollback();
+					throw ex;
+				}
+			}
+		} finally {
+			em.close();
+		}
+	}
+
+	public static void updatePost(Long aktivnostID, String value)
+			throws Exception {
+		EntityManager em = EMF.get();
+		try {
+			Query q = em.createNamedQuery("Aktivnost.findById");
+			q.setParameter("identifier", aktivnostID);
+			@SuppressWarnings("unchecked")
+			List<Aktivnost> qresult = q.getResultList();
+			if (!qresult.isEmpty()) {
+				Aktivnost a = qresult.get(0);
+				EntityTransaction et = em.getTransaction();
+				et.begin();
+				try {
+					a.setInfo(value);
+					em.merge(a);
+					et.commit();
+				} catch (Exception ex) {
+					et.rollback();
+					throw ex;
+				}
+			}
+
+		} finally {
+			em.close();
+		}
+	}
+
+	public static byte[] getPhoto(String email,String type){
+		EntityManager em = EMF.get();
+		try{
+			System.out.println("getPhoto " + email + type);
+			Korisnik kor = getKorisnikByEmail(email);
+			if(kor==null){
+				return null;
+			}
+			Query q = em.createNamedQuery("Slike.findByKorisnikId");
+			q.setParameter("korisnikId", kor.getId());
+			@SuppressWarnings("unchecked")
+			List<Slike> qresult=q.getResultList();
+			if(qresult.isEmpty()){
+				return null;
+			}
+			Slike s = qresult.get(0);
+			if(type.equalsIgnoreCase("profile")){
+				if(s.getImage()==null){
+					return null;
+				}
+				return s.getImage().getBytes();
+			}
+			if(type.equalsIgnoreCase("cover")){
+				if(s.getCover()==null){
+					return null;
+				}
+				return s.getCover().getBytes();
+			}
+			return null;
+			
+		} finally {
+			em.close();
+		}
+	}
+	public static void setPhoto(String sessionID,byte[] info,String type) throws Exception{
+		EntityManager em=EMF.get();
+		try{
+			Korisnik kor = getKorisnikBySessionId(sessionID);
+			if(kor!=null){
+				Query q = em.createNamedQuery("Slike.findByKorisnikId");
+				q.setParameter("korisnikId", kor.getId());
+				@SuppressWarnings("unchecked")
+				List<Slike> qresult=q.getResultList();
+				if(!qresult.isEmpty()){
+					Slike s = qresult.get(0);
+					EntityTransaction et = em.getTransaction();
+					et.begin();
+					try{
+						if(type.equalsIgnoreCase("profile")){
+							s.setImage(new Blob(info));
+						} 
+						if(type.equalsIgnoreCase("cover")){
+							s.setCover(new Blob(info));
+						}
+						em.merge(s);
+						et.commit();
+					} catch (Exception ex){
+						et.rollback();
+						throw ex;
+					}
+				}
+			}
+		}finally{
+			em.close();
+		}
+	}
+}

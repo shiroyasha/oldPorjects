@@ -1,0 +1,42 @@
+package microfb.shared.IO;
+
+import java.io.Serializable;
+
+public class AktivnostIO implements Serializable
+{
+	private static final long serialVersionUID = 1L;
+	
+	
+
+	public AktivnostIO() {
+		super();
+	}
+
+	public TypeIO type;
+	
+	public String value;
+	
+
+	public AktivnostIO(TypeIO type, String value) {
+		super();
+		this.type = type;
+		this.value = value;
+	}
+
+	public TypeIO getType() {
+		return type;
+	}
+
+	public void setType(TypeIO type) {
+		this.type = type;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+	
+}

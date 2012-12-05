@@ -1,0 +1,52 @@
+<script src="jquery.js"></script>
+<script src="romajitokana.js"></script>
+
+<style>
+    #bla
+    {
+        background-color : #999999;
+        width : 50;
+        height : 50;
+    }
+
+    #bla1
+    {
+        width : 500;
+        height : 90;
+        border:5px solid red;
+        font-size : 50px;
+        color : #bb9933;
+        background-color: #ffff33;
+        border-color: #888888;
+    }
+</style>
+
+<meta http-equiv="content-type" content="text/xml; charset=utf-8"/>
+
+<input id="bla1" type='text' style="text-align:center;" onkeydown='dva(this);' onkeypress='change(this, "2"); return false;' onkeyup='ispis(this);'>
+
+<script type="text/javascript">
+    var text = '';
+    var bris = [];
+    function change( element , str )
+    {
+        text += String.fromCharCode(event.keyCode);
+    }
+
+    function ispis( element )
+    {
+        var temp = romaji_to_kana( text, 0 );
+        element.value = temp[0];
+        bris = temp[1];
+    }
+
+    function dva( element )
+    {
+        if (event.keyCode == 8 )
+        {
+            var temp = bris.pop();
+            text = text.slice(0, -temp);
+        }
+    }
+</script>
+

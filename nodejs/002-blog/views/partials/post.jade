@@ -1,0 +1,10 @@
+.post
+  a(href='/post/#{indexInCollection}')
+    h2 #{indexInCollection + " post "}
+  p #{post.datum}
+
+  each par in post.text.split('\n')
+    p #{par} <br />
+
+  #comments!= partial('partials/comment', {collection : post.komentari})
+  

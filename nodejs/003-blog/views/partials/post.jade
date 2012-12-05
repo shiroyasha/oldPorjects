@@ -1,0 +1,30 @@
+<div id='post#{indexInCollection}' class='blogPost'>
+.postHeader
+  h2.postTitle #{post.title}
+  p.postAutor= ' by '
+    a( href='' )= post.autor.username
+
+<div class='postText' >
+each par in post.text.split('\n\n')
+  p #{par} <br />
+</div>
+
+.postFooter
+  .comentsHeader
+    p podeli
+    p.postDatum= ' ' + prettyDate( post.datum );
+    
+    if session.user && session.user.username === post.autor.username 
+      a(href='/post/#{indexInCollection}/edit')
+        p= ' edit '
+
+  .comments!= partial('partials/comment', { collection : post.comments } );
+
+  form(method='POST', action='/post/#{indexInCollection}/comment/new')
+    textarea(name='text', cols='60', rows='3')
+    br
+    input(type='submit')
+
+//script(src='/javascripts/rad.js')
+</div>
+

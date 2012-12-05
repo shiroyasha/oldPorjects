@@ -1,0 +1,230 @@
+package microfb.shared;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import sun.nio.cs.ext.MacHebrew;
+
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
+
+public class Utilities implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+
+
+	public Utilities() {
+		super();
+	}
+
+	public enum PasswordStrength {
+		VERY_WEAK, WEAK, MEDIUM, STRONG, VERY_STRONG, TOO_SHORT;
+
+		public String getColor() {
+			if( this.toString().equals("VERY_WEAK") )
+			{
+				return "Red";
+			}
+			
+			if( this.toString().equals("WEAK") )
+			{
+				return "DarkOrange";
+			}
+			
+			if( this.toString().equals("MEDIUM") )
+			{
+				return "DarkYellow";
+			}
+			
+			if( this.toString().equals("STRONG") )
+			{
+				return "Green";
+			}
+			
+			if( this.toString().equals("VERY_STRONG") )
+			{
+				return "DarkGreen";
+			}
+			
+			return "DarkRed";
+		}
+	}
+	
+	public static PasswordStrength passwordStrength(String pass) {
+		if (pass.length() < Validator.MINIMUM_PASSWORD_LENGTH)
+			return PasswordStrength.TOO_SHORT;
+
+		int brojac = 0;
+
+		if (pass.matches(".*\\d.*"))
+			brojac++; // sadrzi bar jednu cifru
+		if (pass.matches(".*[a-z].*"))
+			brojac++; // sadrzi bar jedno malo slovo
+		if (pass.matches(".*[A-Z].*"))
+			brojac++; // sadrzi bar jedno veliko slovo
+		if (pass.matches(".*[a-z].*"))
+			brojac++; // sadrzi bar jedno malo slovo
+		if (pass.matches(".*[^a-zA-Z0-9].*"))
+			brojac++; // sadrzi bar jedno specijalno slovo
+		if (pass.length() > 6)
+			brojac++; // password je duzi od 6 karaktera
+
+		switch (brojac) {
+		case 0:
+		case 1:
+			return PasswordStrength.VERY_WEAK;
+		case 2:
+		case 3:
+			return PasswordStrength.WEAK;
+		case 4:
+			return PasswordStrength.MEDIUM;
+		case 5:
+			return PasswordStrength.STRONG;
+		default:
+			return PasswordStrength.VERY_STRONG;
+		}
+	}
+	
+
+
+	public static String generateFuzzyTime( long current, long time )
+	{
+		long delta = current - time;
+		
+		if(delta < 0) return "not yet";
+		
+		delta = delta / 1000;
+		
+		int[] delioci = {60, 60, 24, 30, 365};
+		
+		int i;
+		for( i = 0; delta > delioci[i]; i++ )
+		{
+			delta = delta / delioci[i];
+		}
+		
+		switch( i )
+		{
+			case 0: return delta == 1 ? "one second ago" :  delta + " seconds ago";
+			case 1: return delta == 1 ? "one minute ago" :  delta + " minutes ago";
+			case 2: return delta == 1 ? "one hour ago" :  delta + " hours ago";
+			case 3: return delta == 1 ? "yesterday" :  delta + " days ago";
+			case 4: return delta == 1 ? "last month" :  delta + " months ago";
+			default: return delta == 1 ? "last year" : delta + " years ago";
+		}
+	}
+	
+
+	public static String nadjiSliku( String s )
+	{
+		if( s.length() < 4 ) return s;
+
+		String http = "http://";
+		String https = "https://";
+
+
+		int pocetak = s.indexOf(http);
+		pocetak = (pocetak == -1) ? s.indexOf(https) : pocetak;
+		
+		int kraj = s.indexOf(' ', pocetak );
+		kraj = (kraj == -1) ? s.length() : kraj; 
+
+		
+
+		if( pocetak != -1 && pocetak + http.length() < kraj )
+		{
+			String rez = s.substring(pocetak, kraj );
+			if( rez.length() > 4 && ( rez.substring(rez.length()-4).equals(".jpg") || 
+								      rez.substring(rez.length()-4).equals(".png") ||
+								      rez.substring(rez.length()-4).equals(".png") ) ) return rez;
+		}
+
+		return "";
+
+	}
+	
+
+	
+	
+	public static String nadjiVideo( String s )
+	{
+		String yt = "http://www.youtube.com/watch?v=";
+		int pocetak = s.indexOf(yt);
+		
+		int kraj = s.indexOf('&', pocetak );
+		kraj = (kraj == -1) ? s.indexOf(' ', pocetak): kraj;
+		kraj = (kraj == -1) ? s.length() : kraj;
+		
+		if( pocetak != -1 )
+		{
+			return "<iframe width='560px' height='315px' style='display:block;' src='http://www.youtube.com/embed/"+ s.substring( pocetak + yt.length(), kraj ) + "' frameborder='0' allowfullscreen></iframe>";
+		}
+		
+		return "";
+	}
+	
+	
+	
+    
+	 public static String nadjiUrlove( String s )
+	    {
+	    	if( s.length() < 4 ) return s;
+	    	
+	    	String http = "http://";
+	    	String https = "https://";
+	    	String www = "www.";
+	    	
+	    	
+	    	int pocetak1 = s.indexOf(http);
+	    	int kraj1 = s.indexOf(' ', pocetak1 );
+	    	kraj1 = (kraj1 == -1) ? s.length() : kraj1; 
+
+
+
+	    	int pocetak2 = s.indexOf(https);
+	    	int kraj2 = s.indexOf(' ', pocetak2 );
+	    	kraj2 = (kraj2 == -1) ? s.length() : kraj2; 
+
+
+
+
+	    	int pocetak3 = s.indexOf(www);
+	    	int kraj3 = s.indexOf(' ', pocetak3 ) ;
+	        kraj3 = (kraj3 == -1) ? s.length() : kraj3; 
+
+
+
+	    	
+	    	String r = "";
+	    	//System.out.println( pocetak1 + " " + pocetak2 + " " + pocetak3 );
+	        //System.out.println( kraj1 + " " + kraj2 + " " + kraj3 );
+
+
+
+
+	    	if( pocetak1 != -1 && pocetak1 + http.length() < kraj1 )
+	    	{
+	    		r = s.substring(pocetak1, kraj1 );
+	        	return nadjiUrlove( s.substring(0, pocetak1) ) + "<a href='" + r + "'>" + r + "</a>" + nadjiUrlove( s.substring(kraj1) );
+	    	}
+
+	    	else if ( pocetak1 != -1 && pocetak2 + https.length() < kraj2 )
+	    	{
+	    		r = s.substring(pocetak2, kraj2 );
+	        	return nadjiUrlove( s.substring(0, pocetak2) ) + "<a href='" + r + "'>" + r + "</a>" + nadjiUrlove( s.substring(kraj2) );
+	    	}
+
+	    	else if ( pocetak3 != -1 &&  pocetak3 + www.length() < kraj3 )
+	    	{
+	    		r = s.substring(pocetak3, kraj3 );
+	        	return nadjiUrlove( s.substring(0, pocetak3) ) + "<a href='http://" + r + "'>" + r + "</a>" + nadjiUrlove( s.substring(kraj3) );
+	    	}
+	    		
+	    	return s;
+
+	    }
+
+    
+	
+}

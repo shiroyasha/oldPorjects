@@ -1,0 +1,465 @@
+package maze.maze;
+
+import java.awt.Point;
+
+/**
+ * 
+ * @author Milos Marinkovic
+ * @version 1.6
+ * 
+ */
+
+public class Maze {
+
+	/*
+	 * U prvom delu klase implementirani su standardni metodi za ucitavanje i kreiranje lavirinta,
+	 * konstruktori, pomocne promenljive i konstante.
+	 * 
+	 * U drugom delu implementirani su privatni metodi koji se koriste da bi se olaksao rad unutar
+	 * glavnih metoda koji resavaju problem.
+	 * 
+	 * Korstante se koriste kao sigurnosne vrednosti pri kreiranju Objekta Maze.
+	 * Promenljiva gustZidova koristi se da bi se odredila kolicina zidova unutar lavirinta,
+	 * i izrazena je kao ceo broj. Predstavlja procentualnu popunjenost lavirinta zidovima.
+	 * 
+	 * Lavirint je predstavljen pomocu dvodimenzionalnog niza sa elementima tipa Cvor, dok je resenje
+	 * problema (najkraci put) predstavljeno jednodimenzionalnim nizom ciji su elementi tipa Point.
+	 * 
+	 * Klasa Cvor koristi se kako bi se olaksao rad sa poljima matrice koja predstavlja
+	 * lavirint, i sadrzi neka standardna polja.
+	 */
+	
+	private final int MAX_DIM = 20;
+	private final int MIN_DIM = 5;
+	private final int DEFAULT_GUSTINA = 20;
+	private final int MIN_GUST = 5;
+	private final int MAX_GUST = 50;
+	private final String PUTANJA = "�";
+	private final String PRAZNO = " ";
+	private final String ZID = "#";
+
+	private int sirina, visina;
+	private int gustZidova;
+	private Cvor[][] graf;
+	private Point[] solution;
+	private int[] iviceX;
+	private int[] iviceY;
+
+	/*
+	 * Standarna 3 konstruktora:
+	 * 1. Bez parametara - uzima default gustinu zidova i postavlja dimenziju na najvecu mogucu
+	 * 2. Uzima 2 parametra - dimenzija se koristi kao velicina matrice (dimenzija x dimenzija),
+	 * 	  dobija se kvadratni lavirint
+	 * 3. Uzima 3 parametra - visina, sirina i gustina zidova 
+	 */
+	
+	public Maze() {
+		super();
+		sirina = visina = MAX_DIM;
+		gustZidova = DEFAULT_GUSTINA;
+	}
+
+	public Maze(int dimenzija, int gustinaZidova) {
+		this();
+		if (valid(dimenzija))
+			sirina = visina = dimenzija;
+		else
+			sirina = visina = MAX_DIM;
+		if (validG(gustinaZidova))
+			gustZidova = gustinaZidova;
+		else
+			gustZidova = DEFAULT_GUSTINA;
+	}
+
+	public Maze(int sir, int vis, int gustinaZidova) {
+		this();
+		if (valid(vis))
+			sirina = vis;
+		else
+			sirina = MAX_DIM;
+		if (valid(sir))
+			visina = sir;
+		else
+			visina = MAX_DIM;
+		if (validG(gustinaZidova))
+			gustZidova = gustinaZidova;
+		else
+			gustZidova = DEFAULT_GUSTINA;
+	}
+	
+	/*
+	 * Get metodi
+	 */
+
+	public Cvor[][] getMazeLayout() {
+		if (graf == null)
+			makeMaze();
+		return graf.clone();
+	}
+
+	public Point[] getSolution() {
+		if (solution == null)
+			solve();
+		return solution;
+	}
+	
+	public int getWidth() {
+		return visina;
+	}
+	
+	public int getHeight() {
+		return sirina;
+	}
+	
+	/*
+	 * Ovaj metod koristi gustinu prosledjenu u konstruktoru kako bi generisao matricu,
+	 * i to ako je nasumicno odabrani broj manji od te gustine, stavlja se zid.
+	 * 
+	 * Takodje, zidovi se stavljaju i oko cele matrice i na sva polja osim ulaza i izlaza.
+	 * 
+	 * Obezbedjeno je i da putanja u lavirintu bude bar 2 polja dugacka, tako sto je prvo
+	 * polje pored ulaza i prvo polje pored izlaza postavljeno na prazno.
+	 * 
+	 * Kreirana matrica cuva se u promenljivoj graf, a koordinate ivica se smestaju u dva
+	 * dvoelementna niza, iviceX i iviceY.
+	 */
+	
+	public void makeMaze() {
+		graf = new Cvor[sirina + 2][visina + 2];
+		for (int i = 0; i < sirina + 2; i++)
+			for (int j = 0; j < visina + 2; j++)
+				if (i == 0 || i == 1 || j == 0 || j == 1 || i == sirina + 1
+						|| i == sirina || j == visina + 1 || j == visina
+						|| randomNum(1, 99) <= gustZidova) {
+					graf[i][j] = new Cvor(-1, 1, new Point(i, j));
+				} else {
+					graf[i][j] = new Cvor(-1, 0, new Point(i, j));
+				}
+		graf[2][1].vrednost = graf[sirina - 1][visina].vrednost = 0;
+		graf[2][2].vrednost = graf[sirina - 1][visina - 1].vrednost = 0;
+		
+		iviceX = new int[2];
+		iviceX[0] = graf.length;
+		iviceX[1] = 0;
+		iviceY = new int[2];
+		iviceY[0] = graf[0].length;
+		iviceY[1] = 0;
+	}
+	
+	/*
+	 * Kontrolni metod printToConsole() koristi se iskljucivo da bi se odstampala matrica u konzolu.
+	 * U finalnoj verziji aplikacije, bice najverovatnije uklonjen.
+	 */
+	
+	@Deprecated
+	public void printToConsole() {
+		if (graf == null)
+			makeMaze();
+		if (solution == null)
+			solve();
+		for (int i = 1; i < graf.length - 1; i++) {
+			for (int j = 1; j < graf[i].length - 1; j++)
+				System.out.print((graf[i][j].vrednost == 1 ? ZID : (inSolution(i, j) ? PUTANJA : PRAZNO)) + " ");
+			System.out.println();
+		}
+	}
+	
+	/*
+	 * Ideja resavanja lavirinta:
+	 * Koriscenjem pomocnog metoda oznaci(int, int, int, boolean) oznacavaju se svi Cvorovi (polja)
+	 * matrice odgovarajucim celim brojevima. Ovaj metod bice dodatno objasnjen kasnije.
+	 * 
+	 * Proces oznacavanja pocinje primarnim oznacavanjem ulazne tacke, a svaki sledeci put zapocinje od
+	 * neke druge tacke, ali sekundarnim oznacavanjem. O primarnom i sekundarnom oznacavanju bice dodatnih
+	 * objasnjenja u okviru metoda "oznaci".
+	 * 
+	 * Proces oznacavanja svih polja prekida se ako je promenjena oznaka izlaza, odnosno ako je izlaz pronadjen.
+	 * Takodje, oznacavanje se prekida ako nema vise neoznacenih polja, ili ako kontrolni brojac dodje do
+	 * granice oznacavanja. Ova granica je postavljena na oko 50% popunjenosti zidovima, odnosno na broj
+	 * sirina * visina / 2. Sledeci cvor za obelezavanje dobija se pozivanjem pomocnog metoda getNextUnmarked().
+	 * 
+	 * Koriscenjem pomocnog metoda getPath() dobija se niz tacaka najkrace putanje, i smesta se u polje "solution".
+	 */
+	
+	private void solve() {	
+		Cvor next = new Cvor(0, 0, new Point(2, 1));
+		boolean type = true;
+		int counter = 1;
+		
+		graf[2][1].oznaka = 0;
+		oznaci(2, 1, 0, type);
+		
+		while (graf[sirina - 1][visina].oznaka == -1 && next != null && ++counter <= (graf.length * graf[0].length) / 2) {
+			next = getNextUnmarked();
+			if (next != null) {
+				type = !type;
+				oznaci(next.mesto.x, next.mesto.y, next.oznaka, type);
+			}
+		}
+		solution = getPath();
+	}
+	
+	/*
+	 * Metod oznaci(x, y, oznaka, primarno) oslanja se delimicno na BFS algoritam pretrazivanja grafa, a
+	 * delimicno na koriscenje bektreka (konkretno problem nalazenja soba bektrekom).
+	 * Promenljive x i y sluze za oznacavanje pozicije na kojoj je nalazi posmatrani cvor.
+	 *
+	 * Kako su elementi dvodimenzionalnog niza "graf" tipa Cvor, sadrse i korisna javna polja, cije
+	 * se vrednosti lako uzimaju i menjaju.
+	 * 
+	 * Ideja je da se obelezavaju cvorovi na sledeci nacin:
+	 *  - Ako je cvor izlaz, zavrsava se obelezavanje.
+	 *  - Ako je cvor zid, zavrsava se obelezavanje.
+	 *  - Ako cvor nije ivica, i ako nije vec obelezen, i ako nije zid, obelezava se za 1 vecom oznakom
+	 *  od one unete u parametru metoda.
+	 *  - Postupak se vrsi za desno-dole, odnosno levo-gore nacin, a zatim se rekurzivno poziva metod
+	 *  za obelezena polja.
+	 *  
+	 * Promenljiva "primarno" sluzi za odredjivanje nacina oznacavanja. Zbog nedovoljno velikog steka,
+	 * nije moguce za sve dimenzije lavirinta koristiti rekurzivni postupak. Takodje, dolazi do preranog
+	 * obelezavanja cvorova, cime se gubi pocetno zamisljena struktura. Ovaj problem je resen tako sto se
+	 * prvo obelezavaju cvorovi desno i dole od posmatranog cvora (primarno = true), a u nekom drugom pozivu
+	 * metoda, obelezavaju se cvorovi gore i levo od posmatranog cvora. Na taj nacin se obelezava velik broj
+	 * cvorova, ali ne garantovano i svi. Zbog toga se ovaj metod poziva (visina * sirina) / 2 puta, cime se
+	 * osigurava obelezavanje svih cvorova (jer je popunjenost zidovima najvise 50% matrice).
+	 */
+	
+	private void oznaci(int x, int y, int oznaka, boolean primarno) {
+		if (x == sirina - 1 && y == visina)
+			return;
+		if (graf[x][y].vrednost == 1)
+			return;
+		
+		Cvor desni, levi, gornji, donji;
+		desni = levi = gornji = donji = null;
+		oznaka++;
+		
+		if (primarno) {
+			
+			if (!edgeX(x) && !edgeY(y + 1)) {
+				desni = graf[x][y + 1];
+				if (desni.oznaka == -1 && desni.vrednost != 1)
+						desni.oznaka = oznaka;
+			}
+			if (!edgeX(x + 1) && !edgeY(y)) {
+				donji = graf[x + 1][y];
+				if (donji.oznaka == -1 && donji.vrednost != 1) 
+					donji.oznaka = oznaka;
+			}
+			if (desni != null && desni.vrednost != 1 && desni.oznaka != -1)
+				oznaci(desni.mesto.x, desni.mesto.y, oznaka, primarno);
+			if (donji != null && donji.vrednost != 1 && donji.oznaka != -1)
+				oznaci(donji.mesto.x, donji.mesto.y, oznaka, primarno);
+			
+		} else {
+			
+			if (!edgeX(x) && !edgeY(y - 1)) {
+				levi = graf[x][y - 1];
+				if (levi.oznaka == -1 && levi.vrednost != 1)
+					levi.oznaka = oznaka;
+			}
+			if (!edgeX(x - 1) && !edgeY(y)) {
+				gornji = graf[x - 1][y];
+				if (gornji.oznaka == -1 && gornji.vrednost != 1)
+					gornji.oznaka = oznaka;
+			}
+			if (levi != null && levi.vrednost != 1 && levi.oznaka != -1)
+				oznaci(levi.mesto.x, levi.mesto.y, oznaka, primarno);
+			if (gornji != null && gornji.vrednost != 1 && gornji.oznaka != -1)
+				oznaci(gornji.mesto.x, gornji.mesto.y, oznaka, primarno);
+		}
+	}
+	
+	/*
+	 * Pomocni metod koji vraca tacno ako se unete koordinate nalaze u nizu resenja "solution" 
+	 */
+	
+	private boolean inSolution(int x, int y) {
+		if (solution == null)
+			return false;
+		for (int i = 0; i < solution.length; i++)
+			if (solution[i].x == x && solution[i].y == y)
+				return true;
+		return false;
+	}
+	
+	/*
+	 * Pomocni metod koji ponovo inicijalizuje lavirint, kako bi se omogucilo ponovno obelezavanje svih
+	 * cvorova unutar matrice. Takodje, sve vrednosti koje su mozda bile izmenjene se ponovo
+	 * vracaju na pocetne.
+	 * 
+	 * Ovaj metod koriscen je u prethodnoj verziji klase, ali nije uklonjen zbog toga sto je moguce da
+	 * ce biti potreban u nekoj od narednih verzija. 
+	 */
+	
+	@SuppressWarnings("unused")
+	private void resetMaze() {
+		if (graf != null)
+			for (int i = 0; i < sirina + 2; i++)
+				for (int j = 0; j < visina + 2; j++) {
+					graf[i][j].oznaka = -1;
+					if (graf[i][j].vrednost != 1)
+						graf[i][j].vrednost = 0;
+				}
+		else
+			makeMaze();
+	}
+	
+	/*
+	 * Pomocni metod koji vraca najkracu putanju obelezenog lavirinta.
+	 * 
+	 * Ideja je sledeca:
+	 * Posto ce se u procesu obelezavanja kreiraju neke dvostruke vrednosti za oznake cvorova,
+	 * na primer kada se udje u slepi put i slicno, nije dovoljno brzo koristiti se upisivanjem
+	 * cvorova od najmanjeg do najveceg obelezja.
+	 * Kao resenje ovog problema, cvorovi se u resenje upisuju obrnutim redosledom, od najvece
+	 * vrednosti oznake ka najmanjoj. Ovako se osigurava da ce putanja biti sa manje racvastih delova,
+	 * koji bi mogli da nastanu ukoliko bi se islo redosledom od manje oznake ka vecoj, i dobija se
+	 * na brzini, jer se lakse pronalaze trazeni cvorovi.
+	 * 
+	 * Kreira se novi niz tacaka (Point[]) duzine za 2 vece od najblize oznake pri izlazu. U njega
+	 * se upisuju redom sve tacke sa oznakom za 1 manjom od prethodne. Pronalazak sledece tacke koja
+	 * se upisuje omogucuje pomocni metod getNextNode(Point).
+	 * 
+	 * Kada se dodje do pocetne tacke, niz se zavrsava, ali on jos uvek ima jedan element manje nego
+	 * sto bi trebalo, jer se upis putanje pocinje od obelezja najblizeg izlazu, a ne od samog izlaza.
+	 * Ovaj problem je resen tako sto se u niz resenja dodaje i izlaz, cime je niz resenja kompletiran.
+	 * 
+	 * Razlog zbog kojeg se ne krece od samog izlaza je taj sto je vrednost oznake na izlazu (ako je
+	 * lavirint resiv) u prethodnoj verziji bila 0, a brzina rada je ista, pa nisu pravljene nikakve
+	 * izmene. Ako je lavitint neresiv, to znaci da je obelezje na izlazu ostalo nepromenjeno (-1),
+	 * i kao resenje se vraca "null".
+	 */
+	
+	private Point[] getPath() {
+		if (graf == null)
+			solve();
+		int duzina = graf[sirina - 1][visina - 1].oznaka;
+		if (duzina == -1)
+			return null;
+		Point node = new Point(sirina - 1, visina - 1);
+		Point[] sol = new Point[duzina + 2];
+		int i = 0;
+		do {
+			sol[i++] = node;
+			node = getNextNode(node);
+		} while (node != null);
+		sol[i] = new Point(sirina - 1, visina);
+		return sol;
+	}
+
+	/*
+	 * Pomocni metod za pronalazenje koordinata susednog cvora koji ima obelezje za 1 manje.
+	 */
+	
+	private Point getNextNode(Point p) {
+		int x = p.x;
+		int y = p.y;
+		Cvor centar = graf[x][y];
+		Cvor desno = graf[x + 1][y];
+		Cvor levo = graf[x - 1][y];
+		Cvor gore = graf[x][y - 1];
+		Cvor dole = graf[x][y + 1];
+		if (x == 2 && y == 1)
+			return null;
+		if (centar.oznaka - 1 == levo.oznaka)
+			return levo.mesto;
+		if (centar.oznaka - 1 == desno.oznaka)
+			return desno.mesto;
+		if (centar.oznaka - 1 == gore.oznaka)
+			return gore.mesto;
+		if (centar.oznaka - 1 == dole.oznaka)
+			return dole.mesto;
+		return null;
+	}
+	
+	/*
+	 * Metod vraca sledeci cvor koji nije obelezen sa svih strana.
+	 * 
+	 * Prolaskom kroz sve cvorove od prvog do poslednjeg, proverava se da li je trenutnom
+	 * cvoru obelezje nepromenjeno i da li je cvor zid, pa ako nije, vraca se njegov sused
+	 * koji ima najmanju oznaku. Ako nema suseda sa najmanjom oznakom, ili nema neoznacenih
+	 * cvorova, metod vraca "null".
+	 * 
+	 * Za pronalazenje suseda sa najmanjom oznakom koristi se pomocni metod "smallestNeighbour".
+	 */
+	
+	private Cvor getNextUnmarked() {
+		Point start = new Point(2, 1);
+		Point end = new Point(sirina - 1, visina);
+		Cvor exit = null;
+		for (int i = 1; i < graf.length - 1; i++) {
+			for (int j = 1; j < graf[i].length - 1; j++) {
+				exit = graf[i][j];
+				if (!exit.mesto.equals(end) && !exit.mesto.equals(start) &&
+					exit.vrednost != 1 && exit.oznaka == -1)
+				{
+					Cvor newStart = smallestNeighbour(exit.mesto);
+					if (newStart != null)
+						return newStart;
+				}
+			}
+		}
+		return null;
+	}
+
+	/*
+	 * Metod koji vraca od 4 suseda onog sa najmanjom oznakom, takvog da taj sused nije zid.
+	 */
+	
+	private Cvor smallestNeighbour(Point p) {
+		final int MAX_OZ = graf.length * graf[0].length;
+		Cvor min = new Cvor(MAX_OZ, 0, new Point(0, 0));
+		
+		Cvor levi = graf[p.x][p.y - 1];
+		Cvor desni = graf[p.x][p.y + 1];
+		Cvor gornji = graf[p.x - 1][p.y];
+		Cvor donji = graf[p.x + 1][p.y];
+		
+		if (levi.vrednost != 1 && levi.oznaka != -1 && levi.oznaka < min.oznaka) {
+			min = levi;
+		}
+		if (desni.vrednost != 1 && desni.oznaka != -1 && desni.oznaka < min.oznaka) {
+			min = desni;
+		}
+		if (gornji.vrednost != 1 && gornji.oznaka != -1 && gornji.oznaka < min.oznaka) {
+			min = gornji;
+		}
+		if (donji.vrednost != 1 && donji.oznaka != -1 && donji.oznaka < min.oznaka) {
+			min = donji;
+		}
+		return (min.oznaka == MAX_OZ) ? null : min;
+	}
+	
+	/*
+	 * Metodi valid(int) i validG(int) koriste se da bi se proverio opseg unetih vrednosti
+	 * za visinu, sirinu, dimenziju i gustinu. U slucaju loseg opsega, vrednosti uzimaju
+	 * default konstante, odnosno maksimalne vrednosti za dimenziju.
+	 * 
+	 * Metod randomNum vraca jedan ceo broj iz opsega u konstrukroru.
+	 * 
+	 * Metodi edgeX i edgeY vracaju true ako je koordinata na ivici lavirinta.
+	 */
+	
+	private boolean edgeX(int x) {
+		return (x == iviceX[0] || x == iviceX[1]);
+	}
+	
+	private boolean edgeY(int y) {
+		return (y == iviceY[0] || y == iviceY[1]);
+	}
+	
+	private boolean valid(int dim) {
+		return (dim <= MAX_DIM && dim >= MIN_DIM) ? true : false;
+	}
+
+	private boolean validG(int gust) {
+		return (gust <= MAX_GUST && gust >= MIN_GUST) ? true : false;
+	}
+
+	private int randomNum(int min, int max) {
+		java.util.Random r = new java.util.Random();
+		return r.nextInt((max - min + 1)) + min;
+	}
+
+}

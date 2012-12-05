@@ -1,0 +1,383 @@
+package microfb.server;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.UUID;
+
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import microfb.client.services.MicroFBService;
+import microfb.server.entities.Aktivnost;
+import microfb.server.entities.Korisnik;
+import microfb.shared.Validator;
+import microfb.shared.IO.AktivnostIO;
+import microfb.shared.IO.KorisnikIO;
+import microfb.shared.exceptions.LogedOutException;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+
+
+public class Service extends RemoteServiceServlet implements MicroFBService {
+
+	private static final long serialVersionUID = 1L;
+	
+
+	static boolean loggedIn(String sessionID)
+	{
+		if( EntityHelper.sessionIDExists(sessionID) )
+		{
+			System.out.println("loggedIn 1");
+			try {
+				EntityHelper.userActive(sessionID);
+				System.out.println("loggedIn 2");
+				return true;
+			} catch (Exception e) {e.printStackTrace();}
+			
+		}
+		return false;
+	}
+	
+
+	@Override
+	public String login(String mail, String password, Boolean keepMeLoggedIn ) throws IllegalArgumentException {
+		String sessionID = EntityHelper.getSessionID(mail);
+		
+		Korisnik k = EntityHelper.getKorisnikByEmail(mail);
+		if( k == null ) throw new IllegalArgumentException("invalid email or password");
+		if( !k.getPassword().equals(password) ) throw new IllegalArgumentException("invalid email or password");
+		
+		if( !sessionID.equals("") ) return sessionID;
+		
+		sessionID = UUID.randomUUID().toString();
+		try
+		{
+			EntityHelper.setSessionID( mail, sessionID , keepMeLoggedIn );
+		}catch(Exception e)
+		{
+			java.util.logging.Logger log = java.util.logging.Logger.getLogger("Test");
+			log.severe("login failed");
+			
+			throw new IllegalArgumentException("something went wrong whuile looging in");
+		}
+		return sessionID;
+	}
+
+	@Override
+	public void logout(String sessionID) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		try 
+		{
+			EntityHelper.setSessionID( EntityHelper.getKorisnikBySessionId(sessionID).getEmail() , "", false );
+		}catch(Exception e)
+		{
+			java.util.logging.Logger log = java.util.logging.Logger.getLogger("Test");
+			log.severe("logout failed");
+		}
+	}
+
+	public static void sendMail( String email, String subject, String msgBody ) throws IllegalArgumentException
+	{
+		try
+		{
+			Properties props = new Properties();
+			Session session = Session.getDefaultInstance(props, null);
+				
+			Message msg = new MimeMessage(session);
+			
+			msg.setFrom(new InternetAddress("milosmns@gmail.com", "MicroFB"));
+			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(email, email));
+
+			msg.setSubject(subject);
+			msg.setText(msgBody);
+				
+			Transport.send(msg);
+		} catch (Exception ex)
+		{
+			GWT.log("Error while sending an e-mail to '" + email + "'", ex);
+			throw new IllegalArgumentException("greska sa mailom");
+		}
+	}
+
+	
+	@Override
+	public void register(String email, String password, String name, String birthdate, 
+			                String city, String workplace, String quote, String sex ) throws Exception {
+			
+		if( !Validator.email(email) ) throw new IllegalArgumentException("not a valid email");
+		if( !Validator.password(password) ) throw new IllegalArgumentException("not a valid password");
+		
+		if( EntityHelper.userExists(email) ) throw new IllegalArgumentException("user with that email already exists");
+
+		String actCode = UUID.randomUUID().toString();
+		
+		try {
+			
+			sendMail(email, "MicroFB User Registration",
+					"Dear User,\n\n" +
+					"Thank you for registering with our service!\n\n" +
+					"In order to complete the registration procedure, please visit the following link:\n\n" +
+					"http://mikrofejs.appspot.com/activation?code=" + actCode + "\n\n" +
+					"The link will expire in 24h. After that, you will have to repeat the registration procedure.\n\n" +
+					"Thank you once again for choosing our service!");
+			
+			EntityHelper.createNewKorisnik( email, password,name, birthdate, city, workplace, quote,sex, actCode );
+
+					
+		} catch (Exception e) {
+			GWT.log("create new korisnik failed", e);
+			throw new IllegalArgumentException("FATAL ERROR when creating user");
+		}
+	}
+	
+
+	@Override
+	public KorisnikIO getKorisnikByEmail(String sessionID, String email) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		Korisnik k = EntityHelper.getKorisnikByEmail(email);
+		
+		if( k == null ) throw new IllegalArgumentException("no user with that email");
+		
+		return new KorisnikIO( k.getName(),k.getPassword(),k.getEmail(),
+                				k.getBirthdate().toString(),k.getCity(),
+                				k.getWorkplace(),k.getQuote(),k.getSex());
+	}
+
+	@Override
+	public KorisnikIO getKorisnik(String sessionID) throws IllegalArgumentException {
+		System.out.println(sessionID);
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		Korisnik k = EntityHelper.getKorisnikBySessionId(sessionID);
+		
+		if( k == null ) throw new IllegalArgumentException("no user with that sessionID");
+		
+		return new KorisnikIO( k.getName(),k.getPassword(),k.getEmail(),
+                				k.getBirthdate().toString(),k.getCity(),
+                				k.getWorkplace(),k.getQuote(),k.getSex());
+	}
+	
+	
+
+	@Override
+	public List<KorisnikIO> getAllKorisnik(String sessionID) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		List<KorisnikIO> lista = new ArrayList<KorisnikIO>();
+		
+		for( Korisnik k : EntityHelper.getAllKorisnik() )
+			lista.add( new KorisnikIO( k.getName(),k.getPassword(),k.getEmail(),
+	                   k.getBirthdate().toString(),k.getCity(),
+	                   k.getWorkplace(),k.getQuote(),k.getSex()));
+		
+		return lista;
+	}
+	
+	
+
+	@Override
+	public List<KorisnikIO> searchForKorisnik(String sessionID, String queryString) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		List<KorisnikIO> lista = new ArrayList<KorisnikIO>();
+		
+		for( Korisnik k : EntityHelper.findKirisnikByQueryString(queryString) )
+			lista.add( new KorisnikIO( k.getName(),k.getPassword(),k.getEmail(),
+					                   k.getBirthdate().toString(),k.getCity(),
+					                   k.getWorkplace(),k.getQuote(),k.getSex()));
+		
+		return lista;
+	}
+	
+	
+
+	@Override
+	public void updateKorisnik(String sessionID, KorisnikIO korisnik) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		//EntityHelper.updateKorinik(korisnik);
+	}
+	
+
+	
+	
+	
+
+	@Override
+	public void post(String sessionID, String emailTo, String value) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		
+		try {
+			EntityHelper.addAktivnost( sessionID, emailTo, value);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Override
+	public void post(String sessionID, Long parent, String value) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		
+		try {
+			EntityHelper.addAktivnost( sessionID, parent, value);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void updatePost(String sessionID, Long aktivnostID, String value) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		try {
+			EntityHelper.updatePost( aktivnostID, value);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public void deletePost(String sessionID, Long aktivnostID ) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		try {
+			EntityHelper.deleteAktivnost( aktivnostID );
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@Override
+	public long getWallItemsCount(String sessionID, String email, long from, long to) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		long count = EntityHelper.countAktivnosti( email, from, to);
+		return count;
+	}
+	
+	
+	@Override
+	public List<AktivnostIO> getKomentari(String sessionID, Long parent, long from, int to) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		List<Aktivnost> aktivnosti = EntityHelper.getAktivnosti(parent, from, to);
+		
+		List<AktivnostIO> rez = new ArrayList<AktivnostIO>(aktivnosti.size());
+		
+		for( Aktivnost a : aktivnosti )
+		{
+			String owner = EntityHelper.getKorisnikById( a.getMsgFor() ).getEmail();
+			String fromKorisnik = EntityHelper.getKorisnikById( a.getMsgFrom() ).getEmail();
+			
+			
+			String value = a.getInfo();
+			
+			long likes = EntityHelper.getAktivnostLikes( a.getIdentifier() );
+			long dislikes = EntityHelper.getAktivnostDislikes( a.getIdentifier() );
+			boolean likeble = true;
+			long komentariCount = EntityHelper.countAktivnosti(parent);
+			
+			AktivnostIO akt = new AktivnostIO(parent, owner, fromKorisnik, value, likes, dislikes, likeble, komentariCount);
+			rez.add( akt );
+		}
+		
+		return rez;
+	}
+	
+	
+
+	@Override
+	public List<AktivnostIO> getWallItems(String sessionID, String email, long from, int to) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		List<Aktivnost> aktivnosti = EntityHelper.getAktivnosti(email, from, to);
+		
+		List<AktivnostIO> rez = new ArrayList<AktivnostIO>(aktivnosti.size());
+		
+		for( Aktivnost a : aktivnosti )
+		{
+			Long parent = a.getFather();
+			String owner = email;
+			String fromKorisnik = EntityHelper.getKorisnikById( a.getMsgFrom() ).getEmail();
+			
+			String value = a.getInfo();
+			
+			long likes = EntityHelper.getAktivnostLikes( a.getIdentifier() );
+			long dislikes = EntityHelper.getAktivnostDislikes( a.getIdentifier() );
+			boolean likeble = true;
+			long komentariCount = EntityHelper.countAktivnosti(parent);
+			
+	
+			AktivnostIO akt = new AktivnostIO(parent, owner, fromKorisnik, value, likes, dislikes, likeble, komentariCount);
+			rez.add( akt );
+		}
+		
+		return rez;
+	}	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@Override
+	public boolean likeEnabled(String sessionID, Long aktivnostID ) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		return EntityHelper.likeEnabled(sessionID, aktivnostID);
+	}
+
+	@Override
+	public void like(String sessionID, Long aktivnostID ) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		try {
+			EntityHelper.addLike( sessionID, aktivnostID , 1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void unlike(String sessionID, Long aktivnostID ) throws IllegalArgumentException {
+		if( !loggedIn(sessionID) ) throw new LogedOutException();
+		
+		try {
+			EntityHelper.addLike( sessionID, aktivnostID , -1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
+}

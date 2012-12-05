@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  <cron>
+    <url>/logoutUsers</url>
+    <description>logout users every 10 minutes</description>
+    <schedule>every 10 minutes</schedule>
+  </cron>
+  
+  <cron>
+    <url>/cleanRegistration</url>
+    <description>clean registration every 24h</description>
+    <schedule>every 24 hours</schedule>
+  </cron>
+</cronentries>

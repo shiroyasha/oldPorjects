@@ -1,0 +1,62 @@
+package service;
+
+import javax.ejb.Remote;
+import javax.jws.WebService;
+
+/**
+ * 
+ * @author MilosMarinkovic
+ * @version 1.3
+ *
+ */
+
+@Remote
+@WebService(serviceName = "ShopService")
+public interface SOI {
+	
+	// Vraca 'Success!' ako radi konekcija
+	public String testConnection();
+	
+	// Proverava username i password, i vraca true ako su validni (dovoljne duzine i ne sadrze razmak)
+	public boolean validUsername(String user);
+	public boolean validPassword(String pass);
+	
+	// Dodeljuje korisniku 'user' odredjeni sessionId, i vraca ga kao rezultat
+	public String login(String user, String pass);
+	// Ako je sve ok (mada i nema sta da se desi) vraca true
+	public boolean logout(String sessionId);
+	// Registruje novog korisnika sa unetim parametrima, vraca 0 ako je sve ok
+	// Vraca 1 ako je zauzet username, 2 ako nisu validni username i password, 3 ako nije dobar tip
+	// Vraca 4 za sve ostale greske
+	public int register(String ime, String username, String password, int idTipaKorisnika);
+	// Vraca true ako je sessionId postoji u bazi
+	public boolean loggedIn(String sessionId);
+	
+	// Vraca niz formatiranih stringova za sve artikle
+	// Ako je unet tip, vraca sve artikle tog tipa, ako je
+	// all == true, vraca sve artikle, inace samo dostupne na lageru
+	public String[] getItems(String type, boolean all);
+	
+	// Vraca trenutnu vrednost korpe za sessionId
+	public double getCurrentCost(String sessionId);
+	// Vraca trenutnu vrednost korpe za sessionId sa popustom od 'discount'%
+	public double getCurrentCostPlus(String sessionId, int discount);
+	// Dodaje artikal itemName u korpu kod sessionId-a, vraca ukupnu vrednost korpe
+	public double addToCart(String sessionId, String itemName);
+	// Uklanja artikal itemName iz korpe sessionId-a, vraca ukupnu vrednost korpe
+	public double removeFromCart(String sessionId, String itemName);
+	// Sledeca 2 metada vracaju true ako je sve proslo ok, inace false
+	public boolean checkout(String sessionId); 
+	public boolean leave(String sessionId);
+	
+	// Vraca niz formatiranih komentara za artikal itemName
+	public String[] getCommentsFor(String itemName);
+	// Postavljanje komentara i ocene za itemName artikal, automatski overwrite-uje stari
+	public boolean setCommentFor(String itemName, String sessionId, String comment);
+	public boolean setRatingFor(String itemName, String sessionId, int rating);
+	// Vraca niz ocena za artikal itemName, poslednja u nizu je prosecna ocena
+	public int[] getRatingsFor(String itemName);
+	// Vraca niz formatiranih Stringova, gde je svaki string jedna kupovina
+	public String[] getBuyListFor(String sessionId);
+	
+}

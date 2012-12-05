@@ -1,0 +1,269 @@
+
+var numCols = 0;
+var numRows = 0;
+var numMines = 0;
+var board = new Array(256);
+var tileSrc = "MinesCore/Tile.qml";
+var gameDuration;
+var component = Qt.createComponent(tileSrc);
+var isPlaying = true;
+var hasWon = false;
+var numFlags = 0;
+
+function index(column,row)
+{
+    if( column < 0 || column >= numCols || row < 0 || row >= numRows ) return null;
+    
+    console.log( "index", column + ( row *numCols ));
+    return column + (row * numCols);
+}
+
+function startNewGame( cols, rows, mines )
+{
+    QByteArray.prototype.toString = function()
+    {
+      ts = new QTextStream( this, QIODevice.ReadOnly );
+      return ts.readAll();
+    }
+
+    var f = new QFile( "/tmp/blah" );
+    f.open(QIODevice.ReadWrite);
+    var recent = new Array();
+    var line = new QTextStream(f);
+    while (!line.atEnd())
+    {
+	recent.push(line.readLine().toString());
+    }
+
+
+    if( cols != numCols && rows != numRows )
+    {
+	for(var i = 0; i<numCols*numRows; i++)
+	{
+	    if(board[i] != null)
+		board[i].destroy();
+	}
+
+	numCols = cols;
+	numRows = rows;
+
+	for(var row=0; row<rows; row++)
+	{
+	    for(var column=0; column<cols; column++)
+	    {
+
+		board[index(column,row)] = null;
+		createTile(column,row);
+		
+		//console.log( board[index(column,row)].col );
+	    }
+	}
+	//console.log( "lenght", board.lenght );
+	numMines = mines;
+    }
+    else
+    {
+	for(var i = 0; i<numCols*numRows; i++)
+	{
+	    board[i].hint = 0;
+	    board[i].surFlags = 0;
+	    board[i].hasFlag = false;
+	    board[i].flipped = false;
+	    board[i].hasMine = false;
+	}
+    }
+
+    
+    firstClick(0,0);
+}
+
+function createTile( col, row )
+{
+    if(component.status == Component.Ready)
+    {
+        var dynamicObject = component.createObject(gameBoard);
+        if(dynamicObject == null)
+	{
+            console.log("error creating tile");
+            console.log(component.errorString());
+            return false;
+        }
+        //dynamicObject.hasMine = false;
+	dynamicObject.hint = 0;
+	dynamicObject.surFlags = 0;
+	dynamicObject.hasFlag = false;
+	dynamicObject.col = col;
+	dynamicObject.row = row;
+	dynamicObject.width = 30;
+	dynamicObject.height = 30;
+	dynamicObject.flipped = false;
+	
+        board[index(col,row)] = dynamicObject;
+    }
+    else
+    {
+        console.log("error loading tile component");
+        console.log(component.errorString());
+        return false;
+    }
+    return true;
+}
+
+function tileFromPosition( x, y)
+{
+    
+    var col = Math.floor( x / 30 );
+    var row = Math.floor( y / 30 );
+    
+    console.log( "tileFromPosition",x, y, col, row);
+    
+    return board[index(col,row)];
+}
+
+function flag(mx,my)
+{
+    var tile = tileFromPosition( mx,my );
+    
+    if( tile == null || tile.flipped ) return;
+    
+    tile.hasFlag = !tile.hasFlag;
+    
+    var sign = tile.hasFlag ? 1 : -1
+    
+    for( var a = tile.col - 1; a <= tile.col +1; a++)
+	for( var b = tile.row - 1; b <= tile.row +1; b++)
+	{
+	    if( a == tile.col && b == tile.row ) continue;
+	    
+	    //console.log( a, b);
+	    
+	    var t = board[index(a,b)];
+	    
+	    if( t != null )
+	    {
+		t.surFlags = t.surFlags + sign;
+
+	    }
+	}
+}
+
+function flip(mx,my)
+{
+    var tile = tileFromPosition( mx,my );
+    
+    console.log( "flip", tile.col, tile.row );
+    if(tile) __flip( tile.col, tile.row);
+}
+
+function __flip( mx, my)
+{
+    var tile = board[index(mx,my)];
+    
+    if (tile == null || ( tile.hasFlag && !tile.flipped) )
+    {
+        return false;
+    }
+    
+    if(tile.flipped)
+    {
+	if(tile.hint == 0 || tile.hint != tile.surFlags )
+	{
+	    //console.log( "fff", tile.hint , tile.surFlags);
+	    return false;
+	}
+	
+	for( var a = tile.col - 1; a <= tile.col +1; a++)
+	    for( var b = tile.row - 1; b <= tile.row +1; b++)
+	    {
+		if( a == tile.col && b == tile.row ) continue;
+		var neart = board[index(a,b)];
+		
+		if (neart && !neart.flipped && !neart.hasFlag) 
+		{    
+		    //console.log("flipping aaaa", a, b );
+                    __flip(a,b);
+                }
+	    }
+        return true;
+    }
+    
+    tile.flipped = true;
+
+    if (tile.hint == 0) 
+    {
+	for( var a = mx - 1; a <= mx +1; a++)
+	    for( var b = my - 1; b <= my +1; b++)
+	    {
+		if( a == tile.col && b == tile.row ) continue;
+		
+		//console.log("flipping bbb", b, a );
+		__flip(a,b);
+	    }
+    }
+/*
+    if(tile.hasMine)
+    {
+	foreach(TileData* t, _tiles)
+	{
+	    if( t->hasMine() && !t->hasFlag() )
+	    {
+		t->flip();
+	    } 
+	}
+      
+        won = false;
+        hasWonChanged();
+        setPlaying(false);
+    }
+
+    remaining--;
+    if(!remaining){
+        won = true;
+        hasWonChanged();
+        setPlaying(false);
+    }*/
+    return true;
+}
+
+function firstClick( c, r )
+{
+    //console.log(c, r , numMines, numCols, numRows);
+    
+    var mines = numMines;
+    var remaining = nRows*nCols-mines;
+    
+    while ( mines ) 
+    {
+        var cl = Math.floor( Math.random() * numCols);
+        var rw = Math.floor( Math.random() * numRows);
+	
+	//console.log( cl,rw);
+	
+	if( cl >= c-1 && cl <= c+1 && rw >= r-1 && rw <= r+1 )
+	{
+	    continue;
+	}
+	
+	var tile = board[index(cl,rw)];
+	
+        if ( tile != null) 
+	{
+	    if( tile.hasMine == false )
+	    {
+		//console.log(board[index(cl,rw)].col, board[index(cl,rw)].row, board[index(cl,rw)].hasFlag);
+		tile.hasMine = true;
+		
+		for( var a = cl - 1; a <= cl +1; ++a)
+		    for( var b = rw - 1; b <= rw +1; ++b)
+		    {
+			var t = board[index(a,b)];
+			if( t != null && t != tile )
+			{
+			    t.hint++;
+			}
+		    }
+		mines--;
+	    }
+        }
+    }
+}

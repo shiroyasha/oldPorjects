@@ -1,0 +1,86 @@
+package microfb.server;
+
+import java.util.List;
+
+import microfb.server.entities.Korisnik;
+import microfb.server.entities.Slike;
+import microfb.shared.IO.ImageIO;
+import microfb.shared.IO.KorisnikIO;
+
+public class EntityHelper {
+
+	public static boolean sessionIDExists(String string) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public static String getSessionID(String mail) {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
+	public static Korisnik getKorisnikBySessionId(String sessionID) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	public static void setSessionID( String mail, String sessionID )
+	{
+		//TODO
+	}
+
+	public static List<Korisnik> findKirisnikByQueryString(String queryString) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static boolean updateKorinik(KorisnikIO k) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public static void createNewKorisnik(String email, String password,String  birthdate, String city, String workplace, String quote, String sex, String actCode) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static List<Korisnik> getAllKorisnik() { //trebalo bi da vraca List<Korisnik>
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static List<String> getAllEmails() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static Korisnik getKorisnikByRegistrationCode(String code) { // treba da bude Korisnik entitet a ne KorisnikIO
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static void activateKorisnik(String email) {
+		// TODO Auto-generated method stub
+	}
+
+	public static Slike getCoverPhoto(String email) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static Slike getProfilePhoto(String email) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public static void setCoverPhoto(String email, ImageIO photo) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void setProfilePhoto(String email, ImageIO photo) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

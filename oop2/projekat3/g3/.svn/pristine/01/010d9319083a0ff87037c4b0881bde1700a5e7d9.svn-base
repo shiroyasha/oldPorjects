@@ -1,0 +1,102 @@
+package microfb.server.entities;
+
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+
+import com.google.appengine.api.datastore.Key;
+
+@Entity
+@NamedQueries({
+		@NamedQuery(name = "Aktivnost.findBySessionIDTop", query = "SELECT a FROM Aktivnost a,Korisnik k WHERE k.sessionID = :sessionID AND a.msgFor=k AND a.top= :top"),
+
+		@NamedQuery(name = "Aktivnost.findChildren", query = "SELECT a FROM Aktivnost a WHERE a.father= :father"),
+
+		@NamedQuery(name = "Aktivnost.findChildrenType", query = "SELECT a FROM Aktivnost a WHERE a.father= :father AND a.type= :type"),
+
+		@NamedQuery(name = "Aktivnost.findByType", query = "SELECT a FROM Aktivnost a WHERE a.type= :type")
+
+})
+public class Aktivnost implements Serializable {
+	private static final long serialVersionUID = 1L;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Key id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private long identifier;
+	private Korisnik msgFor;
+	private Aktivnost father;
+	private String type;
+	private long time;
+	private boolean top;
+	private String info;
+
+	public Key getId() {
+		return id;
+	}
+
+	public void setId(Key id) {
+		this.id = id;
+	}
+
+	public Korisnik getMsgFor() {
+		return msgFor;
+	}
+
+	public void setMsgFor(Korisnik msgFor) {
+		this.msgFor = msgFor;
+	}
+
+	public Aktivnost getFather() {
+		return father;
+	}
+
+	public void setFather(Aktivnost father) {
+		this.father = father;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public long getTime() {
+		return time;
+	}
+
+	public void setTime(long time) {
+		this.time = time;
+	}
+
+	public boolean isTop() {
+		return top;
+	}
+
+	public void setTop(boolean top) {
+		this.top = top;
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
+	}
+
+	public long getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(long identifier) {
+		this.identifier = identifier;
+	}
+
+}

@@ -1,0 +1,10 @@
+package microfb.client.widgets;
+
+import microfb.shared.IO.AktivnostIO;
+
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+public class WallChild extends Widget {
+	
+}

@@ -1,0 +1,32 @@
+package microfb.shared.IO;
+
+public class AktivnostIO 
+{
+	public TypeIO type;
+	
+	public String value;
+	
+
+	public AktivnostIO(TypeIO type, String value) {
+		super();
+		this.type = type;
+		this.value = value;
+	}
+
+	public TypeIO getType() {
+		return type;
+	}
+
+	public void setType(TypeIO type) {
+		this.type = type;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+	
+}

@@ -1,0 +1,97 @@
+package microfb.shared.IO;
+
+import java.io.Serializable;
+import java.util.List;
+
+public class AktivnostIO implements Serializable
+{
+	private static final long serialVersionUID = 1L;
+	
+	
+	public AktivnostIO() {
+		super();
+	}
+	
+	
+
+	public AktivnostIO(TypeIO type, String value, long likes, long dislikes,
+			boolean likeble, List<AktivnostIO> komentari) {
+		super();
+		this.type = type;
+		this.value = value;
+		this.likes = likes;
+		this.dislikes = dislikes;
+		this.likeble = likeble;
+		this.komentari = komentari;
+	}
+
+
+
+	private TypeIO type;
+	private String value;
+	
+	private long likes;
+	private long dislikes;
+	private  boolean likeble;
+	
+	private List<AktivnostIO> komentari; 
+	
+	
+	
+	public boolean isLikeble() {
+		return likeble;
+	}
+
+	public void setLikeble(boolean likeble) {
+		this.likeble = likeble;
+	}
+
+	public List<AktivnostIO> getKomentari() {
+		return komentari;
+	}
+
+	public void setKomentari(List<AktivnostIO> komentari) {
+		this.komentari = komentari;
+	}
+	
+	
+
+	public long getLikes() {
+		return likes;
+	}
+
+	public void setLikes(long likes) {
+		this.likes = likes;
+	}
+
+	public long getDislikes() {
+		return dislikes;
+	}
+
+	public void setDislikes(long dislikes) {
+		this.dislikes = dislikes;
+	}
+
+	public AktivnostIO(TypeIO type, String value) {
+		super();
+		this.type = type;
+		this.value = value;
+	}
+
+	public TypeIO getType() {
+		return type;
+	}
+
+	public void setType(TypeIO type) {
+		this.type = type;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+	
+}

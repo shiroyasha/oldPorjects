@@ -1,0 +1,47 @@
+/* 
+	Dizajn aplikacije. Na netu postoji ogroman broj tutorijala o CSS-u
+	Na primer: http://www.html.net/tutorials/css/ 
+*/
+
+/* "body" tag oznacen sa class="mybody" ce imati pozadinu "img/background.jpg"
+	U cilju optimizacije, za pozadinu (jeftinog izgleda) se cesto uzima slika sirine
+	svega par piksela, i onda se naredi browser-u da je ponavlja po x-koordinati */
+body.mybody {
+	background: url("img/background.jpg") repeat-x;
+}
+
+/* "div" tag oznacen sa id="main" ce centrirati svoj sadrzaj i bice sirine 960px */
+div#main {
+	margin: 0 auto;
+	width: 960px;
+}
+
+/* stil "item". komponenta iz GWT aplikacije dobija ovaj stil pozivom setStyleName("item") */
+.item {
+	/* pozadina, nemoj ponavljati, desno poravnata */
+	background: url('img/item.png') no-repeat right;
+	/* dimenzije */
+	width: 191px;
+	height: 28px;
+	/* malo prostora na vrhu (mincanje izgleda) */
+	padding-top: 10px;
+	/* centriraj tekst, koristi "hand" kursor */
+	text-align: center;
+	cursor: pointer;
+}
+
+/* stil "compviewer". koristi ga klasa CompViewer, pozivom setStyleName("compviewer") */
+.compviewer {
+	border: thin solid silver;
+}
+
+/* stil "cartviewer". koristi ga klasa CartViewer, pozivom setStyleName("cartviewer") */
+.cartviewer {
+	border: thin solid silver;
+	font-size: smaller;
+}
+
+/* stil "clickable". koriste ga sve slike u aplikaciji koje sluze kao komande */
+.clickable {
+	cursor: pointer;
+}

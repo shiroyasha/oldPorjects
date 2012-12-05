@@ -1,0 +1,120 @@
+package microfb.client.pages;
+
+import java.util.HashMap;
+
+import microfb.client.FBEntryPoint;
+import microfb.client.widgets.TextBoxFB;
+import microfb.shared.IO.KorisnikIO;
+import microfb.shared.exceptions.LogedOutException;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.RootPanel;
+
+public class HomePage extends AbstractPage {
+
+	protected HashMap<String, RootPanel> homepage;
+	private FlowPanel top, wall, left, right;
+	
+	private TextBoxFB search;
+	
+	public HomePage(RootPanel page, String style) {
+		super(page, style);
+		
+		if (loggedIn() == null) {
+			new LoginPage(panels.get("loginPage"), "loginPage");
+			System.out.println("Redirect - not logged in!");
+		}
+	}
+
+	@Override
+	protected void defineElements() {
+		top = new FlowPanel();
+		top.addStyleName("top");
+		left = new FlowPanel();
+		left.addStyleName("left");
+		right = new FlowPanel();
+		right.addStyleName("right");
+		wall = new FlowPanel();
+		wall.addStyleName("wall");
+		
+		addElement(top);
+		addElement(left);
+		addElement(right);
+		addElement(wall);
+		
+		loadTop();
+		loadLeft(null);
+		loadRight();
+		loadWall(null);
+		
+		FlowPanel logoPanel = new FlowPanel();
+		addElement(logoPanel);
+		logoPanel.add(new Image("/images/LogoMini.png"));
+		logoPanel.addStyleName("logo");
+	}
+
+	private void loadTop() {
+		top.clear();
+		
+		HTML find = new HTML();
+		find.setHTML("<span style=\"display: inline;\">Find user:</span>");
+		top.add(find);
+		
+		search = new TextBoxFB();
+		search.setWidth("150px");
+		top.add(search);
+	}
+	
+	private void loadLeft(String username) {
+		left.clear();
+		
+		final Image loading = new Image("/images/AJAXanim.gif");
+		loading.setVisible(true);
+		left.add(loading);
+
+		final HTML info = new HTML();
+		info.setHTML("Error retrieving info.");
+		info.setVisible(false);
+		left.add(info);
+		
+		//if (username == null)
+			service.getKorisnik(FBEntryPoint.sessionID, new AsyncCallback<KorisnikIO>() {
+				@Override
+				public void onSuccess(KorisnikIO result) {
+					loading.setVisible(false);
+					left.add(new HTML(result.getIme()));
+					left.add(new HTML(result.getEmail()));
+					left.add(new HTML(result.getBirthdate()));
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+					if (caught instanceof LogedOutException)
+						logOut();
+					else {
+						loading.setVisible(false);
+						info.setVisible(true);
+					}
+				}
+			});
+	}
+	
+	private void loadRight() {
+		right.clear();
+		right.add(new HTML("TODO"));
+	}
+	
+	private void loadWall(String username) {
+		wall.clear();
+		for (int i = 1; i <= 40; i++) {
+				wall.add(new HTML("Wall " + i + "\n"));
+				wall.add(new HTML("<br />"));
+				if (i % 5 == 0)
+					wall.add(new HTML("<hr />"));
+		}
+	}
+	
+}

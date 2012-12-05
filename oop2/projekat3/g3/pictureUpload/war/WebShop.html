@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>WebShop</title>
+<script type="text/javascript" src="webShop/webShop.nocache.js"></script>
+
+<!-- Veza sa CSS fajlom -->
+<link type="text/css" rel="stylesheet" href="WebShop.css" />
+
+</head>
+
+<body class="mybody">
+	<iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1'
+		style="position: absolute; width: 0; height: 0; border: 0"></iframe>
+
+	
+	<div id="main">
+		<!-- Gornji baner -->
+		<img src="img/banner.jpg" style="padding-top: 4px; padding-bottom: 4px" />
+		
+		<!-- Tabela sa jednim redom i tri kolone
+		Ovde koristimo HTML tabelu za podelu prozora na tri regiona (za kategorije,
+		komponente, i korpu. Alternativno, mogli smo koristiti DockedPanel kao na prakticnim vezbama 
+		-->
+		<table style="width: 100%; background-color: white">
+		
+			<!-- Red tabele -->
+			<tr style="vertical-align: top">
+			
+				<!-- Prva kolona: u ovaj "div" tag ce ici kategorije komponenti (a ispod njega jos jedan baner) -->		
+				<td style="width: 20%; text-align: center"><div id="kategorije"></div><p /><img src="img/lbanner.jpg" /></td>
+				
+				<!-- Druga kolona: ovde ce ici komponente (GWT moze da smesta widget-e i u "td" tag) -->
+				<td id="komponente" style="width: 60%"></td>
+				
+				<!-- Treca kolona: ovde ce ici korpa -->
+				<td id="korpa" style="width: 20%"></td>
+			</tr>
+	
+		</table>
+	</div>
+</body>
+</html>

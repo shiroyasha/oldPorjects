@@ -1,0 +1,31 @@
+D                      [0-9]
+C                      [a-fA-F0-9]
+
+%{
+#include <stdio.h>
+//#include "y.tab.h"
+
+%}
+
+%%
+
+{D}+                     	{ printf("NUMBER"); }
+({D}+)?"."{D}+           	{ printf("REAL");  }
+"true"                   	{ printf("BOOL"); }
+"false"                  	{ printf("BOOL"); }
+\"[ a-zA-Z0-9.\t\n]+\"   	{ printf("STRING"); }
+"#"{C}{C}{C}{C}{C}{C}           { printf("COLOR"); }
+
+"."                             { printf("DOT"); }
+";"                      	{ printf("SEMICOLON"); }
+":"                      	{ printf("DOUBLEDOT"); }
+"{"                      	{ printf("OPENBRACE"); }
+"}"                      	{ printf("CLOSEBRACE"); }
+"\n"                            { printf("NEWLINE"); }
+
+[-_a-zA-Z][-_a-zA-Z0-9]*        { printf("WORD"); }
+
+
+%%
+
+

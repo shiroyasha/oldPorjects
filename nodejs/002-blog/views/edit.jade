@@ -1,0 +1,10 @@
+h1 #{naslov}
+form(method='POST')
+  input( type='hidden', name='_method', value='PUT')
+  input( type='hidden', name='index', value='#{index}')
+  input( type='hidden', name='datum', value='#{post.datum}')
+  label() Text:
+  p
+    textarea( name='text', rows='20', cols='100')= post.text
+
+  input(type='submit')

@@ -1,0 +1,68 @@
+package microfb.server.entities;
+
+import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import com.google.appengine.api.datastore.Key;
+
+@NamedQueries({ @NamedQuery(name = "Svidjanje.findByAktivnostIdentifier", query = "SELECT s FROM Svidjanje s WHERE s.father = :identifier")
+
+})
+@Entity
+public class Svidjanje implements Serializable {
+	private static final long serialVersionUID = 1L;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Key id;
+	private String type;
+	private Korisnik from;
+	private long father;
+
+	public Svidjanje() {
+		super();
+	}
+
+	public Svidjanje(Korisnik from, long father, String type) {
+		this.from = from;
+		this.father = father;
+		this.type = type;
+	}
+
+	public Key getId() {
+		return id;
+	}
+
+	public void setId(Key id) {
+		this.id = id;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Korisnik getFrom() {
+		return from;
+	}
+
+	public void setFrom(Korisnik from) {
+		this.from = from;
+	}
+
+	public long getFather() {
+		return father;
+	}
+
+	public void setFather(long father) {
+		this.father = father;
+	}
+
+}

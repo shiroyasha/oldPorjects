@@ -1,0 +1,12 @@
+package microfb.shared.IO;
+
+import java.io.Serializable;
+
+public enum TypeIO implements Serializable
+{
+	LIKE,
+	MOVIE,
+	PICTURE,
+	URL,
+	NEW_USER
+}

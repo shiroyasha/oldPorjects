@@ -1,0 +1,656 @@
+;
+; @autor Igor Sarcevic ( igisar@gmail.com )
+;
+(module-name AdminCenter)
+
+(define-alias JFrame javax.swing.JFrame)
+(define-alias JButton javax.swing.JButton)
+(define-alias JComponent javax.swing.JComponent)
+(define-alias BorderLayout java.awt.BorderLayout)
+(define-alias JPanel javax.swing.JPanel)
+(define-alias JTextFiels javax.swing.JTextField)
+
+(javax.swing.UIManager:setLookAndFeel (javax.swing.UIManager:getSystemLookAndFeelClassName))
+
+
+(define AdminService ((service.AdminService):getAdminOperationsPort) )
+
+(define globalSessionID "")
+
+
+;
+; login JComponent
+;
+(define-simple-class LoginComponent (JComponent)
+   ((*init* parent)
+       (invoke-special JComponent (this) `*init* )
+       (setLayout (BorderLayout:new))
+
+       (let ( (panelH (JPanel)) 
+              (panelV (JPanel)) 
+              (central (JPanel))
+              (username (javax.swing.JTextField 15) )
+              (passwd (javax.swing.JPasswordField 15) ) )
+
+         (panelH:setLayout (javax.swing.BoxLayout panelH 0))
+         (panelH:add (javax.swing.Box:createGlue) )
+
+         (panelV:setLayout (javax.swing.BoxLayout panelV 1))
+         (panelV:add (javax.swing.Box:createVerticalGlue))
+
+         (central:setLayout (java.awt.GridLayout 3 1))
+         (central:add username )
+         (central:add passwd )
+         (central:add (JButton 
+                        text:"Login"
+                        action-listener: (lambda (e)
+                                           (let ((sessionID (AdminService:login (username:getText) (passwd:getText)))) 
+                                               (set! globalSessionID sessionID)
+                                                
+                                               (java.lang.System:out:println globalSessionID)
+
+                                               (username:setText "") 
+                                               (passwd:setText "")
+
+                                               (if (not (equal? globalSessionID "") ) 
+                                                 (begin
+                                                   (setVisible #f) 
+                                                   (model1:refresh)
+                                                   (model2:refresh)
+                                                   (model3:refresh)
+                                                   (model4:refresh)
+                                                   (model5:refresh)
+                                                   (model6:refresh)
+                                                 )
+                                               )
+                                           )
+                                         )
+                      )
+         )
+
+         (panelV:add central)
+         (panelV:add (javax.swing.Box:createVerticalGlue))
+         (panelH:add panelV)
+
+         (panelH:add (javax.swing.Box:createGlue) )
+         (add panelH)
+       )
+   )
+)
+
+;
+; n-ti element
+;
+(define (nth i lista)
+  (cond
+    ((null? lista)   #f                      )
+    ((= i 0)       (car lista)               )
+    (else          (nth (- i 1) (cdr lista)) )
+  )
+)
+
+
+;
+; model za tipKorisnika
+;
+
+;(define tipKorisnikaTable (AdminService:getTipKorisnikaTable globalSessionID))
+(define-simple-class TipKorisnikaTableModel (javax.swing.table.AbstractTableModel)
+	
+    (tipKorisnikaTable init:(AdminService:getTipKorisnikaTable globalSessionID) )
+
+    ( (getColumnName columnIndex)
+         (nth columnIndex `("id" "Naziv")) )
+
+    ( (getRowCount) (tipKorisnikaTable:size))
+    ( (getColumnCount)    2)
+
+    ( (getValueAt row column) ( ((tipKorisnikaTable:get row):getItem ):get column) )
+
+    ( (canAdd?) #t)
+    ( (canEdit?) #t )
+
+    ( (add parent)
+        (let ( (naziv (javax.swing.JTextField "")) (panel (JPanel)) )
+            (panel:setLayout (java.awt.GridLayout 1 2))
+            (panel:add (javax.swing.JLabel "Naziv:"))
+            (panel:add naziv)
+
+            (if (equal? javax.swing.JOptionPane:OK_OPTION (javax.swing.JOptionPane:showConfirmDialog 
+                          parent 
+                          panel 
+                          "Unesi podatke" 
+                          javax.swing.JOptionPane:OK_CANCEL_OPTION
+                          javax.swing.JOptionPane:PLAIN_MESSAGE 
+                       ) 
+                )
+                (begin
+                  (AdminService:addToTipKorisnikaTable globalSessionID (naziv:getText) )
+                  (refresh)
+                )
+                (begin
+                    (java.lang.System:out:println " ERROR    TipKorisnika add nije uspeo ")  
+                )
+            )
+        )
+    )
+
+    ( (edit parent index)
+        (let ( (naziv (javax.swing.JTextField (invoke (getValueAt index 1) `toString)) ) (panel (JPanel)) )
+            (panel:setLayout (java.awt.GridLayout 1 2))
+            (panel:add (javax.swing.JLabel "Naziv:"))
+            (panel:add naziv)
+
+            (if (equal? javax.swing.JOptionPane:OK_OPTION (javax.swing.JOptionPane:showConfirmDialog 
+                          parent 
+                          panel 
+                          "Unesi podatke" 
+                          javax.swing.JOptionPane:OK_CANCEL_OPTION
+                          javax.swing.JOptionPane:PLAIN_MESSAGE 
+                       ) 
+                )
+                 (begin
+                  (AdminService:editTipKorisnikaTableItem globalSessionID (string->number (getValueAt index 0)) (naziv:getText) )
+                  (refresh)
+                )
+                (begin
+                    (java.lang.System:out:println " ERROR    TipKorisnika edit nije uspeo ")  
+                )
+           )
+        )
+    )
+
+    ( (refresh) 
+         (java.lang.System:out:println "TipKorisnika table refreshed")
+         (set! tipKorisnikaTable (AdminService:getTipKorisnikaTable globalSessionID) )
+         (fireTableDataChanged)
+    )
+)
+
+;
+; model za tipArtikla
+;
+(define-simple-class TipArtiklaTableModel (javax.swing.table.AbstractTableModel)
+	
+    (tipArtiklaTable init:(AdminService:getTipArtiklaTable globalSessionID) )
+
+    ( (getColumnName columnIndex)
+         (nth columnIndex `("id" "Naziv")) )
+
+    ( (getColumnCount) 2)
+    ( (getRowCount)    (tipArtiklaTable:size))
+
+    ( (getValueAt row column) ( ((tipArtiklaTable:get row):getItem ):get column ) )
+
+    ( (canAdd?) #t )
+    ( (canEdit?) #t )
+
+    ( (add parent)
+        (let ( (naziv (javax.swing.JTextField "")) (panel (JPanel)) )
+            (panel:setLayout (java.awt.GridLayout 1 2))
+            (panel:add (javax.swing.JLabel "Naziv:"))
+            (panel:add naziv)
+
+            (if (equal? javax.swing.JOptionPane:OK_OPTION (javax.swing.JOptionPane:showConfirmDialog 
+                          parent 
+                          panel 
+                          "Unesi podatke" 
+                          javax.swing.JOptionPane:OK_CANCEL_OPTION
+                          javax.swing.JOptionPane:PLAIN_MESSAGE 
+                       ) 
+                 )
+
+                    (begin
+                      (AdminService:addToTipArtiklaTable globalSessionID (naziv:getText) )
+                      (refresh)
+                    )
+                    (begin
+                        (java.lang.System:out:println " ERROR    TipArtikla add nije uspeo")  
+                    )
+
+           )
+
+        )
+    )
+   
+
+    ( (edit parent index)
+        (let ( (naziv (javax.swing.JTextField (invoke (getValueAt index 1) `toString))) (panel (JPanel)) )
+            (panel:setLayout (java.awt.GridLayout 1 2))
+            (panel:add (javax.swing.JLabel "Naziv:"))
+            (panel:add naziv)
+
+            (if (equal? javax.swing.JOptionPane:OK_OPTION (javax.swing.JOptionPane:showConfirmDialog 
+                          parent 
+                          panel 
+                          "Unesi podatke" 
+                          javax.swing.JOptionPane:OK_CANCEL_OPTION
+                          javax.swing.JOptionPane:PLAIN_MESSAGE 
+                       ) 
+                )
+                (begin
+                  (AdminService:editTipArtiklaTableItem globalSessionID (string->number (getValueAt index 0)) (naziv:getText) )
+                  (refresh)
+                )
+                (begin
+                    (java.lang.System:out:println " ERROR    TipArtikla edit nije uspeo ")  
+                )
+            )
+        )
+    )
+
+    ( (refresh) 
+         (java.lang.System:out:println "TipArtikla table refreshed")
+         (set! tipArtiklaTable (AdminService:getTipArtiklaTable globalSessionID) )
+         (fireTableDataChanged)
+    )
+
+
+)
+
+
+;
+; model za tipKorisnika
+;
+(define-simple-class ArtikalTableModel (javax.swing.table.AbstractTableModel)
+	
+    (ArtikalTable init:(AdminService:getArtikliTable globalSessionID) )
+
+    ( (getColumnName columnIndex)
+       (nth columnIndex `("id" "naziv" "kolicinaNaLageru" "TipArtikla" "Cena")) )
+
+    ( (getColumnCount) 5)
+    ( (getRowCount) (ArtikalTable:size))
+
+    ( (getValueAt row column) ( ((ArtikalTable:get row):getItem ):get column) )
+
+    ( (canAdd?) #t )
+    ( (canEdit?) #t )
+
+    ( (add parent)
+        (let ( (lista (AdminService:getTipArtiklaTable globalSessionID) )
+               (naziv (javax.swing.JTextField "") )
+               (cena (javax.swing.JTextField "") )
+               (kolicina (javax.swing.JTextField "") )
+               (panel (JPanel)) 
+               (combo (javax.swing.JComboBox))
+             )
+            (panel:setLayout (java.awt.GridLayout 4 2 3 3))
+            (panel:add (javax.swing.JLabel "Naziv:"))
+            (panel:add naziv)
+            (panel:add (javax.swing.JLabel "Cena:"))
+            (panel:add cena)
+            (panel:add (javax.swing.JLabel "Kolicina na lageru:"))
+            (panel:add kolicina)
+
+            (let iter (( i 0 ))
+              (cond
+                ( (equal? i (lista:size)) )
+                ( else            (begin 
+                                    (combo:addItem (((lista:get i):getItem):get 1) )
+                                    (iter (+ i 1))
+                                  )
+
+                )
+              )
+            )
+            (combo:setSelectedIndex 0 )
+            (combo:setEditable #f)
+            (panel:add combo)
+
+
+            (if (equal? javax.swing.JOptionPane:OK_OPTION  (javax.swing.JOptionPane:showConfirmDialog 
+                          parent 
+                          panel 
+                          "Unesi podatke" 
+                          javax.swing.JOptionPane:OK_CANCEL_OPTION
+                          javax.swing.JOptionPane:PLAIN_MESSAGE 
+                       ) 
+                )
+                (begin
+                  (AdminService:addToArtikliTable globalSessionID 
+                                                     (naziv:getText)
+                                                     (string->number (cena:getText))
+                                                     (string->number (kolicina:getText))
+                                                     (string->number (( (lista:get (combo:getSelectedIndex)):getItem ):get 0))
+                                                    )
+                  (refresh)
+                )
+                (begin
+                    (java.lang.System:out:println " ERROR    TipArtikla edit nije uspeo ")  
+                )
+           )
+        )
+    )
+
+    ( (edit parent index)
+        (let ( (lista (AdminService:getTipArtiklaTable globalSessionID) )
+               (naziv (javax.swing.JTextField (invoke (getValueAt index 1) `toString)) )
+               (cena (javax.swing.JTextField (invoke (getValueAt index 4) `toString) ) )
+               (kolicina (javax.swing.JTextField (invoke (getValueAt index 2) `toString) ) )
+               (panel (JPanel))
+               (combo (javax.swing.JComboBox))
+             )
+            (panel:setLayout (java.awt.GridLayout 4 2 3 3))
+            (panel:add (javax.swing.JLabel "Naziv:"))
+            (panel:add naziv)
+            (panel:add (javax.swing.JLabel "Cena:"))
+            (panel:add cena)
+            (panel:add (javax.swing.JLabel "Kolicina na lageru:"))
+            (panel:add kolicina)
+
+            (let iter (( i 0 ))
+              (cond
+                ( (equal? i (lista:size)) )
+                ( else            (begin 
+                                    (combo:addItem (((lista:get i):getItem):get 1) )
+                                    (iter (+ i 1))
+                                  )
+
+                )
+              )
+            )
+            (combo:setSelectedIndex 0 )
+            (combo:setEditable #f)
+            (panel:add combo)
+
+
+            (if (equal? javax.swing.JOptionPane:OK_OPTION (javax.swing.JOptionPane:showConfirmDialog 
+                          parent 
+                          panel 
+                          "Unesi podatke" 
+                          javax.swing.JOptionPane:OK_CANCEL_OPTION
+                          javax.swing.JOptionPane:PLAIN_MESSAGE 
+                       ) 
+                )
+
+
+                 (begin
+                  (AdminService:editArtikliTableItem globalSessionID 
+                                                     (string->number (getValueAt index 0)) 
+                                                     (naziv:getText)
+                                                     (string->number (cena:getText))
+                                                     (string->number (kolicina:getText))
+                                                     (string->number (( (lista:get (combo:getSelectedIndex)):getItem ):get 0))
+                                                    )
+                  (refresh)
+                )
+                (begin
+                    (java.lang.System:out:println " ERROR    TipArtikla edit nije uspeo ")  
+                )
+           )
+        )
+    )
+
+    ( (refresh) 
+         (java.lang.System:out:println "Artikli table refreshed")
+         (set! ArtikalTable (AdminService:getArtikliTable globalSessionID) )
+         ;(java.lang.System:out:println ((AdminService:getArtikliTable globalSessionID):size) )
+         ;(java.lang.System:out:println (ArtikalTable:size) )
+
+         (fireTableDataChanged)
+    )
+
+)
+
+;
+; model za korisnike
+;
+
+(define-simple-class KorisnikTableModel (javax.swing.table.AbstractTableModel)
+	
+    (KorisnikTable init:(AdminService:getKorisniciTable globalSessionID) )
+
+    ( (getColumnName columnIndex)
+         (nth columnIndex `("id" "ime" "username" "password" "banned" "TipKorisnika" "SessionID" "timeSinceLastActive")) )
+    
+    ( (getColumnCount) 8)
+    
+    ( (getRowCount) (KorisnikTable:size))
+
+    ( (getValueAt row column) ( ((KorisnikTable:get row):getItem ):get column) )
+
+    ;( (ispisi) (java.lang.System:out:println "aaa"))
+
+    ( (canAdd?) #f )
+    ( (canEdit?) #t )
+
+    ( (edit parent index)
+        (let ((lista (AdminService:getTipKorisnikaTable globalSessionID) )
+               (ime (javax.swing.JTextField (invoke (getValueAt index 1) `toString)) )
+               (username (javax.swing.JTextField (invoke (getValueAt index 2) `toString) ) )
+               (baned (javax.swing.JCheckBox "" (getValueAt index 4) ) )
+               (panel (JPanel))
+               (combo (javax.swing.JComboBox:new ) )
+              )
+
+            (panel:setLayout (java.awt.GridLayout 4 2 3 3))
+            (panel:add (javax.swing.JLabel "Ime:"))
+            (panel:add ime)
+            (panel:add (javax.swing.JLabel "Username:"))
+            (panel:add username)
+            (panel:add (javax.swing.JLabel "Baned:"))
+            (panel:add baned)
+            (panel:add (javax.swing.JLabel "Tip:"))
+            
+            (let iter (( i 0 ))
+              (cond
+                ( (equal? i (lista:size)) )
+                ( else            (begin 
+                                    (combo:addItem (((lista:get i):getItem):get 1) )
+                                    (iter (+ i 1))
+                                  )
+
+                )
+              )
+            )
+            (combo:setSelectedIndex 0 )
+            (combo:setEditable #f)
+            (panel:add combo)
+
+            (if (equal? javax.swing.JOptionPane:OK_OPTION (javax.swing.JOptionPane:showConfirmDialog 
+                          parent 
+                          panel 
+                          "Unesi podatke" 
+                          javax.swing.JOptionPane:OK_CANCEL_OPTION
+                          javax.swing.JOptionPane:PLAIN_MESSAGE 
+                       ) 
+                )
+                (begin
+                  (AdminService:editKorisniciTableItem globalSessionID
+                                                     (string->number (getValueAt index 0)) 
+                                                     (ime:getText)
+                                                     (username:getText)
+                                                     (baned:isSelected)
+                                                     (string->number (( (lista:get (combo:getSelectedIndex)):getItem ):get 0))
+                                                    )
+                  (refresh)
+                )
+                (begin
+                    (java.lang.System:out:println " ERROR    Korisnici edit nije uspeo ")  
+                )
+   
+            )
+        )
+    )
+
+
+    ( (refresh) 
+         (java.lang.System:out:println "Korisnici table refreshed")
+         (set! KorisnikTable (AdminService:getKorisniciTable globalSessionID) )
+         (fireTableDataChanged)
+    )
+
+
+)
+
+
+;
+; model za korpu
+;
+(define-simple-class KorpaTableModel (javax.swing.table.AbstractTableModel)
+	
+    (KorpaTable init:(AdminService:getKorpaTable globalSessionID) )
+
+    ( (getColumnName columnIndex)
+       (nth columnIndex `("id" "Korisnik" "Artikal" "Kolicina")) )
+
+    ( (getColumnCount) 4)
+    ( (getRowCount) (KorpaTable:size))
+
+    ( (getValueAt row column) ( ((KorpaTable:get row):getItem ):get column) )
+
+    ( (canAdd?) #f )
+    ( (canEdit?) #f )
+
+    ( (refresh) 
+         (java.lang.System:out:println "Korpa table refreshed")
+         (set! KorpaTable (AdminService:getKorpaTable globalSessionID) )
+         (fireTableDataChanged)
+    )
+
+
+)
+
+
+;
+; model za kupljeno
+;
+(define-simple-class KupljenoTableModel (javax.swing.table.AbstractTableModel)
+
+    (KupljenoTable init:(AdminService:getKupljenoTable globalSessionID) )
+
+    ( (getValueAt row column) ( ((KupljenoTable:get row):getItem ):get column) )
+
+
+    ( (getColumnName columnIndex)
+       (nth columnIndex `("id" "Korisnik" "Artikal" "Kolicina" "Ocena" "Komentar")) )
+
+    ( (getColumnCount) 6)
+    ( (getRowCount) (KupljenoTable:size))
+
+    ( (getValueAt row column) "test1")
+
+    ( (canAdd?) #f )
+    ( (canEdit?) #f )
+
+    ( (refresh) 
+         (java.lang.System:out:println "Kupljeno table refreshed")
+         (set! KupljenoTable (AdminService:getKupljenoTable globalSessionID) )
+         (fireTableDataChanged)
+    )
+
+
+)
+
+
+
+
+
+;
+; glavnaKomponenta 
+;
+(define-simple-class GlavnaKomponenta (JComponent)
+    ((*init* model parent)
+       (invoke-special JComponent (this) `*init*)
+
+       (setLayout (BorderLayout:new))
+
+       (let ( (tabela (javax.swing.JTable model)) )
+            (add (javax.swing.JScrollPane tabela)) 
+       
+
+           (let ( (donjiPanel (JPanel)) )
+               (donjiPanel:setLayout (javax.swing.BoxLayout donjiPanel 0))
+
+               (donjiPanel:add (JButton 
+                                  text: "Refresh List"
+                                  action-listener: (lambda (e) (model:refresh))
+                               )
+               )
+               (donjiPanel:add (javax.swing.Box:createHorizontalStrut 10))
+
+               (if (model:canAdd?)
+               (donjiPanel:add (JButton 
+                                 text: "Add"
+                                 action-listener: (lambda (e) (model:add (this)))
+                               )
+               ))
+               ;(donjiPanel:add (javax.swing.Box:createHorizontalStrut 5))
+               ;(donjiPanel:add (JButton "Remove"))
+               (donjiPanel:add (javax.swing.Box:createHorizontalStrut 5))
+
+               (if (model:canEdit?)
+               (donjiPanel:add (JButton 
+                                  text: "Edit"
+                                  action-listener: (lambda (e) (if (and (>= (tabela:getSelectedRow) 0) (< (tabela:getSelectedRow) (model:getRowCount)) )
+                                                                 (begin
+                                                                   (model:edit (this) (tabela:getSelectedRow))
+                                                                   (java.lang.System:out:println (tabela:getSelectedRow))
+                                                                 )
+                                                               )
+                                                   )
+                               )
+               )
+               )
+               (donjiPanel:add (javax.swing.Box:createHorizontalStrut 5))
+
+               (donjiPanel:add (javax.swing.Box:createGlue))
+               (donjiPanel:add (JButton 
+                                   text: "logout"
+                                   action-listener: (lambda (e)
+                                                       (AdminService:logout globalSessionID) 
+                                                       (set! globalSessionID "")
+                                                       ((parent:getGlassPane):setVisible #t)
+                                                    )
+                               )
+               ) 
+               (add donjiPanel BorderLayout:SOUTH )
+           )
+       )
+    )
+)
+
+
+
+
+(define model1 (TipKorisnikaTableModel) )
+(define model2 (KorisnikTableModel)  )
+(define model3 (ArtikalTableModel) )
+(define model4 (TipArtiklaTableModel) )
+(define model5 (KorpaTableModel) )
+(define model6 (KupljenoTableModel) )
+
+
+
+(define prozor 
+  (let* ( ( glavni ( JFrame:new ) ) 
+          ( tabbed (javax.swing.JTabbedPane))
+          ( glass  (LoginComponent glavni))
+        )
+    
+    (glavni:setTitle "LoseLose admin central")
+    
+    (tabbed:addTab "Tip Korisnika" #!null (GlavnaKomponenta model1 glavni) )
+    (tabbed:addTab "Korisnici"     #!null (GlavnaKomponenta model2 glavni) )
+    (tabbed:addTab "Artikli"       #!null (GlavnaKomponenta model3 glavni) )
+    (tabbed:addTab "TipArtikala"   #!null (GlavnaKomponenta model4 glavni) )
+    (tabbed:addTab "Korpa"         #!null (GlavnaKomponenta model5 glavni) )
+    (tabbed:addTab "Kupljeno"      #!null (GlavnaKomponenta model6 glavni) )
+
+    (glavni:add tabbed)
+    (glavni:setGlassPane glass)
+    (glass:setVisible #t)
+    
+    (glavni:setVisible #t)
+    (glavni:setSize 600 600)
+
+    (glavni:setDefaultCloseOperation JFrame:EXIT_ON_CLOSE )
+  )
+)
+
+
+;(prozor:setVisible #t)
+;(prozor:setSize 600 600)
+
+

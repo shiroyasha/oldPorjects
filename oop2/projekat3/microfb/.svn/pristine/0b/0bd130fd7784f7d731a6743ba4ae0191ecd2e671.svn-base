@@ -1,0 +1,10 @@
+package microfb.shared.IO;
+
+public enum TypeIO
+{
+	LIKE,
+	MOVIE,
+	PICTURE,
+	URL,
+	NEW_USER
+}

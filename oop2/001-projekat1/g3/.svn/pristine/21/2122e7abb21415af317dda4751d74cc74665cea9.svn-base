@@ -1,0 +1,198 @@
+package server;
+
+import gui.GlavniGui;
+
+import shared.AgentServerI;
+import shared.MessageServerI;
+import shared.RacerPositionInfo;
+import shared.Racer;
+import shared.ServerInfo;
+
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+
+/**
+ * 
+ * @author Nikola Bosic (nikolabosic91@gmail.com)
+ * v 1.1  
+ *     (glavni server licno salje trkace na prvu destinaciju, takodje kada agenti obidju sve servere
+ *     vracaju se na glavni )
+ *
+ *
+ *MainServer je objekat glavnog servera, koji kreira i pusta agente (Racer - vise info u shared.Racer). 
+ *
+ *MainServer sadrzi instancu na GlavniGui, aplikaciju koja prikazuje stanje agenata, itd...
+ *
+ *Kada korisnik porkene GlavniGui prozor, podesi servere i agente, 
+ *kreira se objekat glavnog servera sa svim potrebnim informacijama :
+ *ime glavnog servera, 
+ *port glavnog servera, 
+ *instancu Glavnog gui-a <- prozor aplikacije ,
+ *listu servera koje agent treba da posjeti(objasnjenje u gui.ServerInfo klasi)
+ *listu imena agenata, zadatih u nizu stringova.
+ *
+ *Nakon sto se dobiju sve potrebne informacije, MainServer registruje sebe
+ *Posle toga se kreiraju agenti(Racer) koji se krecu po listi zadatih servera.
+ *
+ *MainServer i Server(ostali serveri, preko kojih agenti idu) su napravljeni kao odvojene klase kako 
+ *bi kod bio razumljiviji.
+ *
+ *Main server prima informacije o trenutnoj poziciji trkaca, i obavjestava korisnika preko gui aplikacije
+ *
+ *Slanje-prijem opcija je takodje implementirano preko RMI tehnologije, osnovni interfejs shared.MessageServerI
+ */
+
+public class MainServer  extends UnicastRemoteObject implements MessageServerI,AgentServerI{
+	private static final long serialVersionUID = 1L;
+	
+	// ServerInfo je tip koji sadrzi sve bitne osobine servera (ime, host i port), vise info u (gui.ServerInfo)
+	private ServerInfo serverInfo;
+	
+	// main server sadrzi i listu servera koje agenti treba da obidju
+	private List<ServerInfo> serverList;
+	private List<Racer> racers;
+	private Map<String,Integer> times;
+	
+	private GlavniGui gui;
+	
+	int started;
+	int finished;
+	
+	private Registry registry;
+	
+	protected MainServer() throws RemoteException{
+		super();
+	}
+	
+	
+	/* 
+	 * bitno je napomenuti da je jedino potrebno napraviti instancu main servera sa tacno zadatim parametrima
+	 * Glavni server pravi agente i salje ih na prosledjenu listu, ne vodici racuna o "ispravnosti" dobijene
+	 * liste servera
+	 * 
+	 * kreiranje glavnog servera, informacije dobija od korisnika preko glavne gui aplikacije
+	*/
+	public MainServer(String serverName,String port, GlavniGui gui,ServerInfo[] servers,String[] racers) throws RemoteException{
+		// TODO : server treba da generise svoj lavirint, this.maze = Maze.generateMaze();
+		
+		serverInfo=new ServerInfo(serverName,port,"localhost");
+		Registry registry = LocateRegistry.createRegistry(Integer.parseInt(port));
+		registry.rebind(serverName, this);
+		System.out.println("Main Server created on port "+ port);
+		this.gui=gui;
+		finished=0;
+		started=racers.length;
+		times=new HashMap<String,Integer>();
+		setServers(servers);
+		setRacers(racers);
+	}
+	/*
+	 * drugi konstruktor, ukoliko zelimo da napravimo glavni server na lokalhostu, port 1099
+	 */
+	public MainServer(String serverName,GlavniGui gui,ServerInfo[] servers,String[] racers) throws RemoteException{
+		serverInfo=new ServerInfo(serverName,"1099","localhost");
+		registry = LocateRegistry.createRegistry(1099);
+		registry.rebind("AgentServer", this);
+		System.out.println("Main Server created on localhost:1099");
+		this.gui=gui;
+		finished=0;
+		started=racers.length;
+		times=new HashMap<String,Integer>();
+		setServers(servers);
+		setRacers(racers);
+	}
+	
+	//zbog ponovnog pokretanja igre u toku rada programa
+	public void reset(ServerInfo[] servers,String[] racers) throws RemoteException
+	{
+		finished=0;
+		started=racers.length;
+		times=new HashMap<String,Integer>();
+		setServers(servers);
+		setRacers(racers);
+	}
+	
+	/*
+	 * metod setServers niz servera prebacuje u Listu servera,
+	 * moguca modifikacija je da setServers napravi i registruje sve servere koji su na lokalhostu
+	 */
+	private void setServers(ServerInfo[] servers) throws RemoteException{
+		serverList=new ArrayList<ServerInfo>();
+		Collections.addAll(serverList, servers);		
+	}
+	
+	
+	/* pravimo trkace(agente) prema korisnikovim instrukcijama, i pustamo ih da se trkaju
+	* bitno je da obavjestimo glavnu gui aplikaciju da je trka pocela
+	*/
+	
+	public void setRacers(String[] racers) throws RemoteException{
+		Racer racer=null;
+		this.racers=new ArrayList<Racer>();
+		started=racers.length;
+		for(int i=0;i<racers.length;i++){
+			racer=new Racer(racers[i],i,serverInfo,serverList);
+			this.racers.add(racer);
+		}
+	}
+	public void startRace() throws RemoteException{
+		gui.raceStarted();
+		for(Racer r:racers){
+			r.setStartTime(System.currentTimeMillis());
+			sendRacer(r);
+		}
+	}
+	// posto smo Main Server postavili kao poslednjeg na listi, znamo da ce agent otici na barem jedan server
+	public void sendRacer(Racer r) {
+		if (!r.getServerList().isEmpty()){
+			try{
+				ServerInfo nextServer=r.getNextServer();
+				r.removeServer();
+				Registry registry = LocateRegistry.getRegistry(nextServer.host, Integer.parseInt(nextServer.port));
+				AgentServerI serverCP = (AgentServerI) registry.lookup("AgentServer");
+				serverCP.recieveRacer(r);
+			// ukoliko pokusamo da posaljemo agenta na server koji nije registrovan, saljemo ga na sledeceg na listi
+			} catch (Exception e) {
+				sendRacer(r);
+			}
+		}
+	}
+	
+	/*
+	 * implementacija metoda interfejsa shared.RacerPositionInfo
+	 * Bitno je da ovaj interfejs implementira samo glavni server, zato sto on jedini prima informacije
+	 * od trkaca o trenutnoj poziciji
+	 * Kada glavni server primi informaciju od trkaca, prosledjuje je glavnoj aplikaciji
+	 * vise info u gui.GlavniGui
+	 * Kada svi trkaci zavrse trku, obavjestavamo korisnika preko gui-a
+	 */
+	@Override
+	public void messageRecieved(RacerPositionInfo rpi)
+	{
+		System.out.println("agent "+rpi.getIndexOfAgent()+" se nalazi na serveru "+rpi.getServerInfo().host+":"+rpi.getServerInfo().port+" zavrsio ? "+rpi.finished()+" vrijeme "+System.currentTimeMillis());
+		gui.addVisitedServer(rpi.getIndexOfAgent(),rpi.getServerInfo(),rpi.finished());
+	}
+	
+	// Kada agent stigne nazad na Main Server znaci da je zavrsio svoju trku. 
+	// Kada svi agenti stignu nazad na Main Server, trka je gotova, i obavjestavamo korisnika
+	// preko gui-a o tome.
+	@Override
+	public void recieveRacer(Racer r){
+		gui.addVisitedServer(r.getRacerId(),serverInfo,true);
+		
+		finished++;
+		times.put(r.getName(), r.getFinishTime(System.currentTimeMillis()));
+		if(finished==started){
+			System.out.println("Gotova trka");
+			gui.raceFinished( times.keySet().toArray(new String[0]) , times.values().toArray(new Integer[0] ));
+		}
+	}
+}

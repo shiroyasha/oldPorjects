@@ -1,0 +1,48 @@
+import java.rmi.RemoteException;
+
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+
+import server.Server;
+
+import maze.gui.Starter;
+import maze.maze.Maze;
+
+
+public class AgentServerMain
+{
+	public static void main( String[] args ) throws RemoteException
+	{
+		Maze maze = null;
+		String port = "";
+		
+		
+		//pokretanje sa gui-em
+		if(args.length == 0)
+		{
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception e) {}
+			
+			
+			port = JOptionPane.showInputDialog("Server Port");
+			
+			Starter window = new Starter();
+			
+			maze = window.getMaze();
+		}
+		//pokretanje bez gui-a
+		else if( args.length == 3 )
+		{
+			port = args[0];
+			
+			int velicina, gustina;
+			try { velicina = Integer.parseInt( args[1] ); } catch(Exception e) { velicina = 5; };
+			try { gustina = Integer.parseInt( args[2] ); } catch(Exception e) { gustina = 20; };
+		
+			maze = new Maze(velicina, gustina);
+		}
+		
+		Server server = new Server("", port, maze);
+	}
+}

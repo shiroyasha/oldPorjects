@@ -1,0 +1,98 @@
+package microfb.client.widgets;
+
+import java.util.ArrayList;
+
+import microfb.client.FBEntryPoint;
+import microfb.client.pages.HomePage;
+import microfb.client.services.MicroFBServiceAsync;
+import microfb.shared.Utilities;
+import microfb.shared.IO.AktivnostIO;
+import microfb.shared.exceptions.LogedOutException;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Widget;
+
+public class WallPost extends Widget {
+
+	private AktivnostIO a;
+	private FlowPanel c;
+	private MicroFBServiceAsync service;
+	private ArrayList<WallChild> children;
+	private HomePage page;
+	
+	public WallPost(AktivnostIO a, MicroFBServiceAsync service, HomePage page) {
+		super();
+		this.a = a;
+		this.page = page;
+		this.service = service;
+		c = new FlowPanel();
+		children = new ArrayList<WallChild>();
+		c.addStyleName("wallPostContainer");
+		loadContainer();
+	}
+	
+	private void loadContainer() {
+		c.clear();
+		
+		c.add(new HTML("ID: " + a.getId()));
+		c.add(new HTML("Owner: " + a.getOwner()));
+		c.add(new HTML("From: " + a.getFrom()));
+		c.add(new HTML("Data: " + a.getValue()));
+		c.add(new HTML("Likes: " + a.getLikes()));
+		c.add(new HTML("Dislikes:" + a.getDislikes()));
+		c.add(new HTML("Comments: " + a.getKomentariCount()));
+		c.add(new HTML("Top level: " + a.getParent() == null ? "Yes" : "No"));
+		c.add(new HTML("Time: " + Utilities.generateFuzzyTime(System.currentTimeMillis(), a.getTime())));
+		
+		final ButtonFB like = new ButtonFB("Like");
+		like.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				service.like(FBEntryPoint.sessionID, a.getId(), new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						if (caught instanceof LogedOutException)
+							page.logOut();
+					}
+					@Override
+					public void onSuccess(Void result) {
+						like.setVisible(false);
+					}
+				});
+			}
+		});
+		c.add(like);
+		
+		final ButtonFB dislike = new ButtonFB("Dislike");
+		dislike.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				service.unlike(FBEntryPoint.sessionID, a.getId(), new AsyncCallback<Void>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						if (caught instanceof LogedOutException)
+							page.logOut();
+					}
+					@Override
+					public void onSuccess(Void result) {
+						dislike.setVisible(false);
+					}
+				});
+			}
+		});
+		c.add(dislike);
+		
+		if (children.size() > 0)
+			for (WallChild wc : children)
+				c.add(wc);
+	}
+	
+	public FlowPanel getData() {
+		return c;
+	}
+	
+}

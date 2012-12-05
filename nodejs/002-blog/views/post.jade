@@ -1,0 +1,6 @@
+a(href='/' ,name='root')
+  h1 #{naslov}
+p #{post.datum}
+.post!= partial('partials/post', { collection : [post.text] } )
+p!= partial('partials/comment', { collection : post.komentari } )
+a(href='#{index}/edit', name='edit') Edit:

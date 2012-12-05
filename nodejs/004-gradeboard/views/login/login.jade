@@ -1,0 +1,15 @@
+#loginForm
+  form(method='POST')
+    input(type='hidden', name=redirectUrl, value=redirectUrl );
+    p Username:
+    input(name='username')
+    p Password:
+    input(type='password', name='password')
+    br
+    input(type='submit')
+    p Stay Logged in:
+    input(type='checkbox', name='stayLoggedIn', checked )
+    a(href='/register')
+      p register
+    a(href='/login/lost_password')
+      p lost password 

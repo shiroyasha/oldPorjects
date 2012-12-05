@@ -1,0 +1,67 @@
+package microfb.client;
+
+import java.util.List;
+
+import microfb.shared.IO.AktivnostIO;
+import microfb.shared.IO.ImageIO;
+import microfb.shared.IO.KorisnikIO;
+import microfb.shared.IO.TypeIO;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+public interface MicroFBServiceAsync {
+
+	void deletePost(String sessionID, AktivnostIO aktivnostIO,
+			AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
+	void getAllKorisnik(String sessionID, AsyncCallback<List<KorisnikIO>> callback) throws IllegalArgumentException;
+
+	void getKorisnik(String sessionID, AsyncCallback<KorisnikIO> callback) throws IllegalArgumentException;
+
+	void getWallItems(String sessionID, int from, int count,
+			boolean onlyPersonal, AsyncCallback<List<AktivnostIO>> callback) throws IllegalArgumentException;
+
+	void getWallItemsForKorisnik(String sessionID, KorisnikIO korisnikIO, int from,
+			int count, boolean onlyPersonal,
+			AsyncCallback<List<AktivnostIO>> callback) throws IllegalArgumentException;
+
+	void like(String sessionID, AktivnostIO aktivnostIO,
+			AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
+	void likeEnabled(String sessionID, AktivnostIO aktivnostIO,
+			AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
+	void login(String mail, String password, AsyncCallback<String> callback) throws IllegalArgumentException;
+
+	void logout(String sessionID, AsyncCallback<Void> callback);
+
+	void post(String sessionID, String value, TypeIO tip,
+			AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
+	void register(String email, String password, String name, String birthdate,
+			String city, String workplace, String quote, String sex,
+			AsyncCallback<Void> callback);
+
+	void searchForKorisnik(String sessionID, String queryString,
+			AsyncCallback<List<KorisnikIO>> callback) throws IllegalArgumentException;
+
+	void unlike(String sessionID, AktivnostIO aktivnostIO,
+			AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
+	void updateKorisnik(String sessionID, KorisnikIO korisnik,
+			AsyncCallback<Void> callback) throws IllegalArgumentException;
+
+	void updatePost(String sessionID, AktivnostIO aktivnostIO, String value,
+			TypeIO tip, AsyncCallback<Boolean> callback) throws IllegalArgumentException;
+
+	void setCoverPhoto(String sessionID, ImageIO photo,
+			AsyncCallback<Void> callback) throws IllegalArgumentException;
+
+	void getCoverPhoto(String sessionID, AsyncCallback<ImageIO> callback) throws IllegalArgumentException;
+
+	void getProfilePhoto(String sessionID, AsyncCallback<ImageIO> callback) throws IllegalArgumentException;
+
+	void setProfilePhoto(String sessionID, ImageIO photo,
+			AsyncCallback<Void> callback) throws IllegalArgumentException;
+
+}

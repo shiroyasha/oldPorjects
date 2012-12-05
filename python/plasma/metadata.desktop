@@ -1,0 +1,14 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Gmail
+Type=Service
+ServiceTypes=Plasma/Applet
+Icon=chronometer
+X-Plasma-API=python
+X-Plasma-MainScript=code/gmail.py
+X-KDE-PluginInfo-Name=hello-python
+X-KDE-PluginInfo-Version=1.0
+X-KDE-PluginInfo-Website=http://plasma.kde.org/
+X-KDE-PluginInfo-Category=Examples
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=true

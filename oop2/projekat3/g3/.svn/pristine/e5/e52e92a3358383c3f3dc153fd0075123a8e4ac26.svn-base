@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cronentries>
+  
+  <cron>
+    <url>/cleanRegistration</url>
+    <description>clean registration every 30 min</description>
+    <schedule>every 60 minutes</schedule>
+  </cron>
+  
+  <cron>
+    <url>/logoutInactiveUsersServlet</url>
+    <description>logout inactive users every 24h</description>
+    <schedule>every 30 minutes</schedule>
+  </cron>
+</cronentries>

@@ -1,0 +1,132 @@
+package microfb.shared.IO;
+
+import java.io.Serializable;
+
+public class AktivnostIO implements Serializable
+{
+	private static final long serialVersionUID = 1L;
+	
+	private Long parent; // null ako je top-level, 
+						  // id ako je komentar na neki top-level
+	
+	private String owner; // email
+	private String from; // email
+
+	private String value;
+	
+	private long likes;
+	private long dislikes;
+	private boolean likeble;
+	
+	private long komentariCount;
+	
+	
+	
+	public AktivnostIO() {
+		super();
+	}
+	
+	
+
+	public AktivnostIO(Long parent, String owner, String from,
+			String value, long likes, long dislikes, boolean likeble,
+			long komentariCount) {
+		super();
+		this.parent = parent;
+		this.owner = owner;
+		this.from = from;
+		this.value = value;
+		this.likes = likes;
+		this.dislikes = dislikes;
+		this.likeble = likeble;
+		this.komentariCount = komentariCount;
+	}
+
+
+
+
+
+
+
+
+
+
+
+	public void setFrom(String from) {
+		this.from = from;
+	}
+	
+	
+	public String getOwner() {
+		return owner;
+	}
+
+
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+
+
+	public String getFrom() {
+		return from;
+	}
+	
+	public boolean isLikeble() {
+		return likeble;
+	}
+
+	public void setLikeble(boolean likeble) {
+		this.likeble = likeble;
+	}
+
+	
+	public long getLikes() {
+		return likes;
+	}
+
+	public void setLikes(long likes) {
+		this.likes = likes;
+	}
+
+	public long getDislikes() {
+		return dislikes;
+	}
+
+	public void setDislikes(long dislikes) {
+		this.dislikes = dislikes;
+	}
+
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+
+
+	public long getKomentariCount() {
+		return komentariCount;
+	}
+
+
+
+	public void setKomentariCount(long komentariCount) {
+		this.komentariCount = komentariCount;
+	}
+
+
+	public Long getParent() {
+		return parent;
+	}
+
+
+	public void setParent(Long parent) {
+		this.parent = parent;
+	}
+	
+}

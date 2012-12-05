@@ -1,0 +1,177 @@
+<!doctype html>
+
+<style>
+    p
+    {
+        padding : 0px;
+        margin : 15px;
+    }
+    .item
+    {
+        width : 600px;
+        height : 100px;
+        background-color : #FFCC33;
+        border : 3px solid #C0C0C0;
+        float : left;
+        margin : 5px;
+    }
+    .item:hover 
+    {
+        background-color : #ffffff;
+    }
+    .kanji
+    {
+        font-size : 40px;
+        color : #202020;
+    }
+    .glavni
+    {
+        width : 700px;
+        height : 500px;
+        font-size : 60px;
+        background-color : #ffcc33;
+    }
+    .eng
+    {
+        font-size : 25px;
+    }
+</style>
+
+<title>ten</title>
+
+<!--
+<div align='center'>
+<div class='glavni' >
+    {% for item in lista %}
+        
+    <div class='item'>
+        <div style="float : left;width : 450px;">
+            <p class='kanji'>
+                <ruby>
+                    <rb>{{ item[1] }}</rb>
+                    <rt>{{ item[2] }}</rt>
+                </ruby>
+            </p>
+        </div>
+
+        <div style="float : left;">
+            <p class='eng'>{{item[6]}}</p>
+        </div>
+
+     </div>
+        
+    {% endfor %}
+
+</div>
+</div>
+--!>
+<div align='center'>
+    <div id='bla' class='glavni'> tu sam </div>
+</div>
+
+<div id='plavi' style='background-color : blue; width : 350px; height : 350px; display : block;'> 1 </div>
+<div id='crveni' style='background-color : red; width : 350px; height : 350px; display : None;'> 1 </div>
+
+
+<input type='button' onclick='sledeci();' value='next' />
+<input type='button' onclick='menjaj();' value='menjaj' />
+
+<script>
+function one(item)
+{
+    return true;
+}
+
+function two(item)
+{
+    return true;
+}
+
+function three(item)
+{
+    return true;
+}
+
+function four(item)
+{
+    return true;
+}
+
+function five(item)
+{
+    return true;
+}
+
+function six(item)
+{
+    return true;
+}
+
+function seven(item)
+{
+    return true;
+}
+
+function eight(item)
+{
+    return true;
+}
+
+function end_of_game()
+{
+    console.log('end');
+}
+
+function start_game( items )
+{
+    console.log('start');
+
+    var MAXIMUM = 8;
+    var array_of_functions = [one, two, three, four, five, six, seven, eight ]; //level functions 
+
+    function finished() 
+    {
+        for( i in items) 
+        {
+            if( i[0] < MAXIMUM ) return false;
+        }
+        return true;
+    }
+
+    function next_level( item_num )
+    {
+        var rez = array_of_functions[ items[item_num][0] ]( items[ item_num ][1] );
+        if( rez )
+        {
+            items[item_num][0] = items[item_num][0] + 1;
+            //prikazi rechenicu
+        }
+        else
+        {
+            //prikazi rec
+        }
+    }
+
+    while( !finished() )
+    {
+        items.sort( function (a, b) { return a[0] < b[0] } );
+        var lista = items.filter( function (a) { return a[0] < MAXIMUM })
+        console.log( lista );
+        for( i = 0, len = lista.length; i < len; i++ ) 
+        {
+            console.log( lista[i][0] );
+            if( lista[i][0] >=0 ) next_level( i );
+        }
+        var len = lista.length;
+        if( len <= 2 && len > 0 )
+        {
+            //uradi josh neke po izboru
+        }
+    }
+
+    end_of_game();
+}
+
+start_game( {{ lista|tojson|safe }} );
+
+</script>

@@ -1,0 +1,73 @@
+package ShopClient;
+
+import javax.swing.table.AbstractTableModel;
+import java.util.List;
+import java.util.ArrayList;
+
+/**
+ * 
+ * @author Nikola Bosic (nikolabosic91@gmail.com)
+ *	
+ *	Klasa koja prdstavlja model za osnovnu tabelu, 
+ *	koristi niz Artikala (vise detalja u klasi Article)
+ *
+ */
+@SuppressWarnings("serial")
+public class TableModelView extends AbstractTableModel{
+		List<Article> articles;
+		
+		public TableModelView(Article[] articles){
+			this.articles=new ArrayList<Article>();
+			if(articles!=null){
+				for(Article a:articles){
+					this.articles.add(a);
+				}
+			}
+			fireTableDataChanged();
+		}
+		
+		public void setArticles(Article[] articles){
+			this.articles.clear();
+			if(articles!=null){
+				for(Article a:articles){
+					this.articles.add(a);
+				}
+			}
+			fireTableDataChanged();
+		}
+		
+		
+		@Override 
+		public Object getValueAt(int row, int column){
+			switch(column){
+			case 0: return articles.get(row).getId();
+			case 1: return articles.get(row).getNaziv();
+			case 2: return articles.get(row).getCijena();
+			case 3: return articles.get(row).getKolicinaNaLageru();
+			default: return articles.get(row).getTip();
+			}
+		}
+		
+		@Override
+		public int getColumnCount(){
+			return 5;
+		}
+		@Override
+		public int getRowCount(){
+			return articles.size();
+		}
+		@Override
+		public String getColumnName(int column){
+			switch(column){
+			case 0: return "id";
+			case 1: return "Naziv";
+			case 2: return "Cijena";
+			case 3: return "Kolicina na lageru";
+			default: return "tip";
+			}
+		}
+		public Article getArticle(int index){
+			return articles.get(index);
+		}
+}
+

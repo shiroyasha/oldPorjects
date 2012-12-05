@@ -1,0 +1,57 @@
+package microfb.server;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.google.gwt.core.client.GWT;
+
+import microfb.server.entities.Korisnik;
+
+public class ActivationServlet extends HttpServlet
+{
+	private static final long serialVersionUID = 1L;
+	
+	@Override
+	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException
+	{
+		String code = req.getParameter("code");
+
+		Korisnik korisnik = EntityHelper.getKorisnikByRegistrationCode( code );
+		if( korisnik == null )
+		{
+			resp.getWriter().println("registration code is invalid");
+			return;
+		}
+		
+		try
+		{
+			EntityHelper.activateKorisnik( korisnik.getEmail() );
+			
+			List<String> emails = EntityHelper.getAllEmails();
+				
+			for( String email : emails )
+			{
+				if( !email.equals( korisnik.getEmail() ) )
+					Service.sendMail(email, "New user on microfb", "Please welcome our new member " + korisnik.getName() );
+			}
+			
+			resp.getWriter().println("You have succesfully registered");
+			return;
+
+		}catch(Exception e )
+		{
+			resp.getWriter().println("Something went wrong with the activation, please try to register again");
+			for( StackTraceElement s : e.getStackTrace() )
+			{
+				resp.getWriter().println( s.toString() );
+			}
+			GWT.log("email already exists", e);
+			
+			return;
+		}
+	}
+}
